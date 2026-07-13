@@ -1,13 +1,18 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { CharacterInput } from './components/CharacterInput'
 import { CharacterList } from './components/CharacterList'
 import { Controls } from './components/Controls'
 import { QuizControls } from './components/QuizControls'
+import { HistoryPanel } from './components/HistoryPanel'
+import { PronunciationPanel } from './components/PronunciationPanel'
 import { SavedWordSets } from './components/SavedWordSets'
 import { StrokeAnimator, type StrokeAnimatorHandle } from './components/StrokeAnimator'
+import { useHistory } from './hooks/useHistory'
 import { useSavedWordSets } from './hooks/useSavedWordSets'
-import type { PlaybackState, PracticeMode, Speed } from './types'
+import { useSpeech } from './hooks/useSpeech'
+import type { PlaybackState, PracticeMode, SavedWordSet, Speed } from './types'
 import { extractChineseCharacters } from './utils/characters'
+import { getPinyin } from './utils/pinyin'
 
 const EXAMPLE = '农场住着一群绵羊'
 
@@ -20,9 +25,18 @@ function App() {
   const [playbackState, setPlaybackState] = useState<PlaybackState>('idle')
   const [isPlayingAll, setIsPlayingAll] = useState(false)
   const [inputMessage, setInputMessage] = useState('')
+  const [pinyinOverride, setPinyinOverride] = useState<string | undefined>()
   const animatorRef = useRef<StrokeAnimatorHandle>(null)
   const runIdRef = useRef(0)
   const savedWordSets = useSavedWordSets()
+  const history = useHistory()
+  const speech = useSpeech()
+
+  const chineseText = characters.join('')
+  const autoPinyin = useMemo(() => getPinyin(chineseText), [chineseText])
+  const displayedPinyin = pinyinOverride ?? autoPinyin
+  const currentCharacter = characters[currentIndex]
+  const currentCharacterPinyin = useMemo(() => getPinyin(currentCharacter ?? ''), [currentCharacter])
 
   const isPlaying = playbackState === 'playing' || isPlayingAll
 
@@ -32,21 +46,27 @@ function App() {
     animatorRef.current?.reset()
   }
 
-  function parseText(text: string) {
+  function parseText(text: string, manualPinyin?: string) {
     stopPlayback()
     const parsed = extractChineseCharacters(text)
     setCharacters(parsed)
     setCurrentIndex(0)
+    setPinyinOverride(manualPinyin)
     setInputMessage(parsed.length ? '' : 'No Chinese characters found. Please try again.')
+    if (parsed.length) history.record(parsed.join(''))
   }
 
   function parseInput() {
     parseText(input)
   }
 
-  function loadText(text: string) {
+  function loadText(text: string, manualPinyin?: string) {
     setInput(text)
-    parseText(text)
+    parseText(text, manualPinyin)
+  }
+
+  function loadSavedSet(set: SavedWordSet) {
+    loadText(set.text, set.pinyin)
   }
 
   function selectCharacter(index: number) {
@@ -55,11 +75,13 @@ function App() {
   }
 
   async function playCurrent() {
+    history.record(chineseText)
     await animatorRef.current?.play()
   }
 
   async function playAll() {
     if (!characters.length) return
+    history.record(chineseText)
     stopPlayback()
     const runId = runIdRef.current
     setIsPlayingAll(true)
@@ -92,14 +114,30 @@ function App() {
       <CharacterInput value={input} onChange={setInput} onSubmit={parseInput} onImport={loadText} />
       {inputMessage && <p className="input-error" role="alert">{inputMessage}</p>}
 
+      <PronunciationPanel
+        text={chineseText}
+        pinyin={displayedPinyin}
+        autoPinyin={autoPinyin}
+        currentCharacter={currentCharacter}
+        currentCharacterPinyin={currentCharacterPinyin}
+        speechMessage={speech.message}
+        onPinyinChange={setPinyinOverride}
+        onUseAutomatic={() => setPinyinOverride(undefined)}
+        onSpeakCharacter={() => speech.speak(currentCharacter ?? '')}
+        onSpeakText={() => speech.speak(chineseText)}
+      />
+
       <SavedWordSets
         currentText={input}
+        currentPinyin={pinyinOverride}
         sets={savedWordSets.sets}
         storageError={savedWordSets.storageError}
         onSave={savedWordSets.save}
-        onLoad={loadText}
+        onLoad={loadSavedSet}
         onDelete={savedWordSets.remove}
       />
+
+      <HistoryPanel items={history.items} onLoad={loadText} onClear={history.clear} />
 
       <section className="practice-card" aria-labelledby="practice-heading">
         <div className="practice-heading">

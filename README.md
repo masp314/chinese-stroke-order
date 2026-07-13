@@ -1,6 +1,6 @@
 # Hanzi Steps
 
-A local-first, installable, child-friendly Chinese character stroke-order and tracing app built with React, TypeScript, Vite, and Hanzi Writer.
+A local-first, installable, child-friendly Chinese character stroke-order and tracing app built with React, TypeScript, Vite, Hanzi Writer, and pinyin-pro.
 
 ## Run locally
 
@@ -45,3 +45,5 @@ Pushes to `main` automatically build and deploy the app through `.github/workflo
 ## Local data
 
 Saved word sets use browser `localStorage`. They remain only in that browser profile and can be removed by clearing site data.
+
+Practice history is also stored locally, deduplicated, and limited to the latest 30 entries. Saved word sets can retain a manually corrected pinyin reading. Pronunciation uses the browser Web Speech API and requires a Chinese voice installed on the device.

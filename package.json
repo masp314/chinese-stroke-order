@@ -1,7 +1,7 @@
 {
   "name": "hanzi-stroke-order",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "hanzi-writer": "^3.7.3",
+    "pinyin-pro": "^3.28.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

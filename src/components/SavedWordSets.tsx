@@ -3,14 +3,15 @@ import type { SavedWordSet } from '../types'
 
 interface SavedWordSetsProps {
   currentText: string
+  currentPinyin?: string
   sets: SavedWordSet[]
   storageError: string
-  onSave: (title: string, text: string) => boolean
-  onLoad: (text: string) => void
+  onSave: (title: string, text: string, pinyin?: string) => boolean
+  onLoad: (set: SavedWordSet) => void
   onDelete: (id: string) => void
 }
 
-export function SavedWordSets({ currentText, sets, storageError, onSave, onLoad, onDelete }: SavedWordSetsProps) {
+export function SavedWordSets({ currentText, currentPinyin, sets, storageError, onSave, onLoad, onDelete }: SavedWordSetsProps) {
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState('')
 
@@ -23,7 +24,7 @@ export function SavedWordSets({ currentText, sets, storageError, onSave, onLoad,
       setMessage('Enter some Chinese words before saving.')
       return
     }
-    if (onSave(title, currentText)) {
+    if (onSave(title, currentText, currentPinyin)) {
       setTitle('')
       setMessage('Saved on this device.')
     }
@@ -57,9 +58,10 @@ export function SavedWordSets({ currentText, sets, storageError, onSave, onLoad,
               <div>
                 <h3>{set.title}</h3>
                 <p>{set.text}</p>
+                {set.pinyin && <p className="saved-pinyin">{set.pinyin}</p>}
               </div>
               <div className="saved-actions">
-                <button type="button" onClick={() => onLoad(set.text)}>Load</button>
+                <button type="button" onClick={() => onLoad(set)}>Load</button>
                 <button className="danger-button" type="button" onClick={() => onDelete(set.id)} aria-label={`Delete ${set.title}`}>Delete</button>
               </div>
             </article>

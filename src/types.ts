@@ -9,4 +9,10 @@ export interface SavedWordSet {
   title: string
   text: string
   createdAt: string
+  pinyin?: string
+}
+
+export interface HistoryItem {
+  text: string
+  lastUsedAt: string
 }

@@ -12,7 +12,10 @@ function readSavedSets(): SavedWordSet[] {
     return parsed.filter((item): item is SavedWordSet => {
       if (!item || typeof item !== 'object') return false
       const candidate = item as Partial<SavedWordSet>
-      return typeof candidate.id === 'string' && typeof candidate.title === 'string' && typeof candidate.text === 'string'
+      return typeof candidate.id === 'string'
+        && typeof candidate.title === 'string'
+        && typeof candidate.text === 'string'
+        && (candidate.pinyin === undefined || typeof candidate.pinyin === 'string')
     })
   } catch {
     return []
@@ -35,12 +38,13 @@ export function useSavedWordSets() {
     }
   }
 
-  function save(title: string, text: string) {
+  function save(title: string, text: string, pinyin?: string) {
     const item: SavedWordSet = {
       id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
       title: title.trim(),
       text: text.trim(),
       createdAt: new Date().toISOString(),
+      pinyin: pinyin?.trim() || undefined,
     }
     return persist([item, ...sets])
   }

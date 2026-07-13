@@ -35,7 +35,7 @@ main { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 38px 0 26
 .eyebrow { margin: 0 0 4px; color: #df725f; font-size: .76rem; font-weight: 800; letter-spacing: .16em; }
 h2 { margin: 0; color: #334155; font-size: clamp(1.2rem, 3vw, 1.55rem); }
 
-.input-card, .practice-card, .library-card {
+.input-card, .practice-card, .library-card, .history-card, .pronunciation-card {
   border: 1px solid rgba(126, 142, 157, .16); border-radius: 28px; background: rgba(255,255,255,.88);
   box-shadow: 0 14px 44px rgba(93, 78, 62, .08);
 }
@@ -54,6 +54,7 @@ textarea:focus { border-color: #79baae; box-shadow: 0 0 0 4px rgba(121,186,174,.
 .import-panel button { justify-self: end; }
 
 .library-card { margin-top: 22px; padding: 23px 28px; }
+.history-card, .pronunciation-card { margin-top: 22px; padding: 23px 28px; }
 .section-title-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .local-badge { padding: 7px 11px; border-radius: 999px; color: #647c77; background: #edf6f4; font-size: .78rem; font-weight: 750; }
 .save-row { display: flex; gap: 10px; margin-top: 16px; }
@@ -65,10 +66,22 @@ input:focus { border-color: #79baae; box-shadow: 0 0 0 4px rgba(121,186,174,.15)
 .saved-item { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 12px 14px; border: 1px solid #e9eeee; border-radius: 15px; background: #fffefa; }
 .saved-item h3 { margin: 0 0 3px; color: #405261; font-size: .98rem; }
 .saved-item p { margin: 0; color: #697982; overflow-wrap: anywhere; }
+.saved-item .saved-pinyin { margin-top: 3px; color: #c66a5a; font-size: .9rem; }
 .saved-actions { display: flex; gap: 7px; flex: 0 0 auto; }
 .saved-actions button { min-height: 40px; padding: 0 13px; }
 .danger-button { color: #b75b4d; }
 .no-saves { margin: 14px 2px 0; color: #90999d; }
+.history-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.history-list button { min-height: 43px; padding: 0 14px; font-size: 1.05rem; font-weight: 600; }
+.pronunciation-text { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 18px 0; padding: 16px; border-radius: 18px; background: #fff7f2; }
+.pronunciation-text strong { color: #334155; font: 600 clamp(1.55rem, 5vw, 2.2rem) "Noto Sans SC", sans-serif; letter-spacing: .08em; }
+.pronunciation-text span { color: #c26051; font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 750; text-align: center; }
+.pinyin-editor { display: flex; flex-direction: column; gap: 7px; color: #5f707a; font-size: .86rem; font-weight: 750; }
+.pinyin-editor small { color: #90999d; font-weight: 500; }
+.current-pronunciation { display: grid; grid-template-columns: auto 58px 1fr; align-items: center; gap: 12px; margin-top: 15px; padding: 11px 14px; border-radius: 15px; background: #f2f8f6; color: #667a76; }
+.current-pronunciation strong { color: #334155; font: 600 1.8rem "Noto Sans SC", sans-serif; text-align: center; }
+.current-pronunciation span:last-child { color: #ba6254; font-size: 1.05rem; font-weight: 750; }
+.speech-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
 
 button, select {
   min-height: 48px; border: 1px solid #dfe5e5; border-radius: 14px; padding: 0 17px;
@@ -118,7 +131,7 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
   .hero { margin-left: 8px; }
   .brand-mark { width: 62px; height: 62px; border-radius: 19px; font-size: 2.2rem; }
   .hero p:last-child { font-size: .92rem; }
-  .input-card, .practice-card, .library-card { padding: 20px 17px; border-radius: 22px; }
+  .input-card, .practice-card, .library-card, .history-card, .pronunciation-card { padding: 20px 17px; border-radius: 22px; }
   .input-row { flex-direction: column; }
   .parse-button { width: 100%; }
   .save-row, .saved-item { align-items: stretch; flex-direction: column; }
@@ -131,4 +144,6 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
   .speed-control { order: -1; }
   .speed-control select { width: 100%; }
   .control-group button { padding: 0 10px; }
+  .speech-actions { grid-template-columns: 1fr; }
+  .current-pronunciation { grid-template-columns: 1fr 52px 1fr; }
 }
