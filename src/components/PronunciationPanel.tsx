@@ -27,6 +27,9 @@ interface PronunciationPanelProps {
 
 export function PronunciationPanel(props: PronunciationPanelProps) {
   const selectedVoice = props.voices.find((voice) => voice.voiceURI === props.selectedVoiceURI)
+  const normalizeLanguage = (language: string) => language.toLowerCase().replaceAll('_', '-')
+  const mainlandVoices = props.voices.filter((voice) => ['zh-cn', 'cmn-cn'].includes(normalizeLanguage(voice.lang)))
+  const hongKongVoices = props.voices.filter((voice) => ['zh-hk', 'yue-hk'].includes(normalizeLanguage(voice.lang)))
 
   return (
     <section id="pronunciation" className="pronunciation-card" aria-labelledby="pronunciation-heading">
@@ -101,9 +104,20 @@ export function PronunciationPanel(props: PronunciationPanelProps) {
               <span>Chinese voice</span>
               <select value={props.selectedVoiceURI} onChange={(event) => props.onVoiceChange(event.target.value)}>
                 {!props.voices.length && <option value="">No Chinese voices found</option>}
-                {props.voices.map((voice) => (
-                  <option value={voice.voiceURI} key={voice.voiceURI}>{voice.name} · {voice.lang}</option>
-                ))}
+                {!!mainlandVoices.length && (
+                  <optgroup label="Mainland Mandarin (default)">
+                    {mainlandVoices.map((voice) => (
+                      <option value={voice.voiceURI} key={voice.voiceURI}>{voice.name} · {voice.lang}</option>
+                    ))}
+                  </optgroup>
+                )}
+                {!!hongKongVoices.length && (
+                  <optgroup label="Hong Kong (manual selection)">
+                    {hongKongVoices.map((voice) => (
+                      <option value={voice.voiceURI} key={voice.voiceURI}>{voice.name} · {voice.lang}</option>
+                    ))}
+                  </optgroup>
+                )}
               </select>
             </label>
             <label>
