@@ -132,6 +132,7 @@ function App() {
 
       <FileImportPanel
         aiProxyUrl={aiSettings.proxyUrl}
+        aiUnlimited={aiSettings.isUnlimited}
         onOpenAiSettings={() => setAiSettingsOpen(true)}
         onUseText={(text) => {
           loadText(text)
@@ -141,9 +142,10 @@ function App() {
 
       <AiSettings
         open={aiSettingsOpen}
-        proxyUrl={aiSettings.proxyUrl}
+        isUnlimited={aiSettings.isUnlimited}
         onClose={() => setAiSettingsOpen(false)}
-        onSave={aiSettings.setProxyUrl}
+        onUnlock={aiSettings.unlock}
+        onLock={aiSettings.lock}
       />
 
       <section id="practice" className="practice-card" aria-labelledby="practice-heading">

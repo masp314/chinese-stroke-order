@@ -2,44 +2,59 @@ import { useState } from 'react'
 
 interface AiSettingsProps {
   open: boolean
-  proxyUrl: string
+  isUnlimited: boolean
   onClose: () => void
-  onSave: (url: string) => void
+  onUnlock: (code: string) => boolean
+  onLock: () => void
 }
 
-export function AiSettings({ open, proxyUrl, onClose, onSave }: AiSettingsProps) {
-  const [draft, setDraft] = useState(proxyUrl)
+export function AiSettings({ open, isUnlimited, onClose, onUnlock, onLock }: AiSettingsProps) {
+  const [code, setCode] = useState('')
+  const [error, setError] = useState('')
 
   if (!open) return null
+
+  function handleUnlock() {
+    if (onUnlock(code)) {
+      setCode('')
+      setError('')
+      onClose()
+    } else {
+      setError('Incorrect code.')
+    }
+  }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content ai-settings-modal" onClick={(e) => e.stopPropagation()}>
-        <h3>AI Extraction Setup</h3>
-        <p>Enter the URL of your AI extraction proxy. This is a server endpoint that forwards image data to Gemini for Chinese text extraction.</p>
-        <label>
-          <span>Proxy URL</span>
-          <input
-            type="url"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="https://your-worker.your-account.workers.dev/extract"
-          />
-        </label>
-        <div className="modal-actions">
-          <button type="button" className="secondary" onClick={onClose}>Cancel</button>
-          <button
-            type="button"
-            className="primary"
-            onClick={() => { onSave(draft); onClose() }}
-          >Save</button>
-        </div>
-        {proxyUrl && (
-          <button
-            type="button"
-            className="link-button danger"
-            onClick={() => { onSave(''); onClose() }}
-          >Remove proxy URL</button>
+        <h3>Unlimited AI Extraction</h3>
+        {isUnlimited ? (
+          <>
+            <p>Unlimited AI extraction is active on this device.</p>
+            <div className="modal-actions">
+              <button type="button" className="secondary" onClick={onClose}>Close</button>
+              <button type="button" className="secondary" onClick={() => { onLock(); onClose() }}>Remove unlimited access</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p>Enter the access code to unlock unlimited AI extraction on this device.</p>
+            <label>
+              <span>Access code</span>
+              <input
+                type="password"
+                value={code}
+                onChange={(e) => { setCode(e.target.value); setError('') }}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleUnlock() }}
+                placeholder="Enter code"
+              />
+            </label>
+            {error && <p className="inline-message error">{error}</p>}
+            <div className="modal-actions">
+              <button type="button" className="secondary" onClick={onClose}>Cancel</button>
+              <button type="button" className="primary" onClick={handleUnlock}>Unlock</button>
+            </div>
+          </>
         )}
       </div>
     </div>

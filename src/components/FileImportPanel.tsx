@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react'
 import { extractFromImage, extractFromPdf, hasChineseText, type ImageOcrMode } from '../utils/importText'
-import { extractWithAi } from '../utils/aiExtract'
+import { extractWithAi, getAiUsageRemaining } from '../utils/aiExtract'
 
 interface FileImportPanelProps {
   onUseText: (text: string) => void
   aiProxyUrl: string
+  aiUnlimited: boolean
   onOpenAiSettings: () => void
 }
 
@@ -12,7 +13,7 @@ const IMAGE_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp'])
 
 type ExtractionMethod = 'local' | 'ai'
 
-export function FileImportPanel({ onUseText, aiProxyUrl, onOpenAiSettings }: FileImportPanelProps) {
+export function FileImportPanel({ onUseText, aiProxyUrl, aiUnlimited, onOpenAiSettings }: FileImportPanelProps) {
   const [expanded, setExpanded] = useState(false)
   const [extractedText, setExtractedText] = useState('')
   const [fileName, setFileName] = useState('')
@@ -23,6 +24,7 @@ export function FileImportPanel({ onUseText, aiProxyUrl, onOpenAiSettings }: Fil
   const [imageMode, setImageMode] = useState<ImageOcrMode>('auto')
   const [previewUrl, setPreviewUrl] = useState('')
   const [method, setMethod] = useState<ExtractionMethod>('local')
+  const [aiRemaining, setAiRemaining] = useState(() => getAiUsageRemaining())
   const inputRef = useRef<HTMLInputElement>(null)
   const selectedFileRef = useRef<File | null>(null)
 
@@ -55,10 +57,11 @@ export function FileImportPanel({ onUseText, aiProxyUrl, onOpenAiSettings }: Fil
     const result = await extractWithAi(file, aiProxyUrl, (message) => {
       setStatus(message)
       setProgress(undefined)
-    })
+    }, aiUnlimited)
     setExtractedText(result.text)
     setPreviewUrl('')
     setProgress(1)
+    setAiRemaining(getAiUsageRemaining())
     setStatus('AI extraction complete. Please review and edit the text.')
     if (!hasChineseText(result.text)) {
       setWarning('No Chinese text found in AI result. Please edit manually or try another image.')
@@ -144,12 +147,12 @@ export function FileImportPanel({ onUseText, aiProxyUrl, onOpenAiSettings }: Fil
                   onChange={() => setMethod('ai')}
                 />
                 <span className="method-label">AI Extract</span>
-                <span className="method-desc">{aiConfigured ? 'Higher accuracy via AI' : 'Needs setup'}</span>
+                <span className="method-desc">{aiConfigured ? (aiUnlimited ? 'Higher accuracy via AI' : `Higher accuracy via AI (${aiRemaining}/3 remaining today)`) : 'Needs setup'}</span>
               </label>
             </div>
-            {!aiConfigured && (
+            {aiConfigured && !aiUnlimited && (
               <button type="button" className="link-button ai-setup-link" onClick={onOpenAiSettings}>
-                Set up AI extraction →
+                Have an access code? Unlock unlimited →
               </button>
             )}
           </fieldset>
