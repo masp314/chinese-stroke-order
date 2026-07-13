@@ -18,6 +18,7 @@ export interface ExtractionResult {
   processedPages?: number
   usedOcr: boolean
   ocrMode?: Exclude<ImageOcrMode, 'auto'>
+  previewUrl?: string
 }
 
 export type ExtractionProgress = (message: string, progress?: number) => void
@@ -68,30 +69,6 @@ async function recognizeSources(sources: Array<File | HTMLCanvasElement>, onProg
   }
 }
 
-function getOtsuThreshold(histogram: number[], pixelCount: number) {
-  let weightedTotal = 0
-  for (let value = 0; value < 256; value += 1) weightedTotal += value * histogram[value]
-  let backgroundWeight = 0
-  let backgroundTotal = 0
-  let bestVariance = -1
-  let threshold = 160
-  for (let value = 0; value < 256; value += 1) {
-    backgroundWeight += histogram[value]
-    if (!backgroundWeight) continue
-    const foregroundWeight = pixelCount - backgroundWeight
-    if (!foregroundWeight) break
-    backgroundTotal += value * histogram[value]
-    const backgroundMean = backgroundTotal / backgroundWeight
-    const foregroundMean = (weightedTotal - backgroundTotal) / foregroundWeight
-    const variance = backgroundWeight * foregroundWeight * (backgroundMean - foregroundMean) ** 2
-    if (variance > bestVariance) {
-      bestVariance = variance
-      threshold = value
-    }
-  }
-  return Math.min(185, Math.max(80, threshold))
-}
-
 function findMainTextBand(rowInk: number[], width: number, height: number) {
   const minimumInk = Math.max(4, Math.round(width * .003))
   const maximumGap = Math.max(8, Math.round(height * .012))
@@ -137,18 +114,42 @@ async function prepareShortPhraseImage(file: File) {
   bitmap.close()
 
   const image = sourceContext.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height)
-  const histogram = Array.from({ length: 256 }, () => 0)
-  for (let index = 0; index < image.data.length; index += 4) {
-    const grey = Math.round(image.data[index] * .299 + image.data[index + 1] * .587 + image.data[index + 2] * .114)
-    histogram[grey] += 1
+  const pixelCount = sourceCanvas.width * sourceCanvas.height
+  const greyscale = new Uint8Array(pixelCount)
+  for (let pixel = 0; pixel < pixelCount; pixel += 1) {
+    const index = pixel * 4
+    greyscale[pixel] = Math.round(image.data[index] * .299 + image.data[index + 1] * .587 + image.data[index + 2] * .114)
   }
-  const threshold = getOtsuThreshold(histogram, sourceCanvas.width * sourceCanvas.height)
+
+  // Compare each pixel with its local background instead of using one global
+  // threshold. Phone photos often have strong lighting gradients that would
+  // otherwise turn an entire dark area into false ink.
+  const integralWidth = sourceCanvas.width + 1
+  const integral = new Uint32Array(integralWidth * (sourceCanvas.height + 1))
+  for (let y = 0; y < sourceCanvas.height; y += 1) {
+    let rowTotal = 0
+    for (let x = 0; x < sourceCanvas.width; x += 1) {
+      rowTotal += greyscale[y * sourceCanvas.width + x]
+      integral[(y + 1) * integralWidth + x + 1] = integral[y * integralWidth + x + 1] + rowTotal
+    }
+  }
+
+  const radius = Math.max(18, Math.round(Math.min(sourceCanvas.width, sourceCanvas.height) * .023))
+  const contrast = 28
   const rowInk = Array.from({ length: sourceCanvas.height }, () => 0)
   for (let y = 0; y < sourceCanvas.height; y += 1) {
+    const top = Math.max(0, y - radius)
+    const bottom = Math.min(sourceCanvas.height - 1, y + radius)
     for (let x = 0; x < sourceCanvas.width; x += 1) {
       const index = (y * sourceCanvas.width + x) * 4
-      const grey = Math.round(image.data[index] * .299 + image.data[index + 1] * .587 + image.data[index + 2] * .114)
-      const ink = grey < threshold
+      const left = Math.max(0, x - radius)
+      const right = Math.min(sourceCanvas.width - 1, x + radius)
+      const localTotal = integral[(bottom + 1) * integralWidth + right + 1]
+        - integral[top * integralWidth + right + 1]
+        - integral[(bottom + 1) * integralWidth + left]
+        + integral[top * integralWidth + left]
+      const localMean = localTotal / ((right - left + 1) * (bottom - top + 1))
+      const ink = greyscale[y * sourceCanvas.width + x] < localMean - contrast
       const value = ink ? 0 : 255
       image.data[index] = value
       image.data[index + 1] = value
@@ -215,7 +216,7 @@ export async function extractFromImage(file: File, mode: ImageOcrMode, onProgres
       const prepared = await prepareShortPhraseImage(file)
       await worker.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_LINE, user_defined_dpi: '300' })
       const result = await worker.recognize(prepared)
-      return { text: cleanExtractedText(result.data.text), usedOcr: true, ocrMode: 'phrase' }
+      return { text: cleanExtractedText(result.data.text), usedOcr: true, ocrMode: 'phrase', previewUrl: prepared.toDataURL('image/png') }
     }
 
     await worker.setParameters({ tessedit_pageseg_mode: PSM.AUTO })
@@ -241,7 +242,7 @@ export async function extractFromImage(file: File, mode: ImageOcrMode, onProgres
         || phraseResult.data.confidence >= documentResult.data.confidence
         || (nonEmptyLineCount > 8 && phraseResult.data.confidence >= 40))
     return preferPhrase
-      ? { text: phraseText, usedOcr: true, ocrMode: 'phrase' }
+      ? { text: phraseText, usedOcr: true, ocrMode: 'phrase', previewUrl: prepared.toDataURL('image/png') }
       : { text: documentText, usedOcr: true, ocrMode: 'worksheet' }
   } finally {
     await worker.terminate()

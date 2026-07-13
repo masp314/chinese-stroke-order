@@ -16,6 +16,7 @@ export function FileImportPanel({ onUseText }: FileImportPanelProps) {
   const [progress, setProgress] = useState<number | undefined>()
   const [busy, setBusy] = useState(false)
   const [imageMode, setImageMode] = useState<ImageOcrMode>('auto')
+  const [previewUrl, setPreviewUrl] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
   async function importFile(file: File) {
@@ -23,6 +24,7 @@ export function FileImportPanel({ onUseText }: FileImportPanelProps) {
     setFileName(file.name)
     setExtractedText('')
     setWarning('')
+    setPreviewUrl('')
     setProgress(0)
 
     try {
@@ -36,6 +38,7 @@ export function FileImportPanel({ onUseText }: FileImportPanelProps) {
         : await extractFromImage(file, imageMode, (message, value) => { setStatus(message); setProgress(value) })
 
       setExtractedText(result.text)
+      setPreviewUrl(result.previewUrl ?? '')
       setProgress(1)
       setStatus(result.usedOcr
         ? `${result.ocrMode === 'phrase' ? 'Short-phrase' : 'Document'} OCR complete. Please review and edit the text.`
@@ -100,6 +103,12 @@ export function FileImportPanel({ onUseText }: FileImportPanelProps) {
           {progress !== undefined && <progress value={progress} max={1} aria-label="Extraction progress" />}
           {status && <p className="inline-message" role="status">{status}</p>}
           {warning && <p className="inline-message error" role="alert">{warning}</p>}
+          {previewUrl && (
+            <figure className="ocr-preview">
+              <figcaption>Image sent to OCR</figcaption>
+              <img src={previewUrl} alt="Processed black-and-white OCR input" />
+            </figure>
+          )}
 
           <label className="extracted-text-editor">
             <span>Extracted text — review and edit before using</span>
