@@ -43,7 +43,7 @@ main { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 38px 0 26
 .eyebrow { margin: 0 0 4px; color: #df725f; font-size: .76rem; font-weight: 800; letter-spacing: .16em; }
 h2 { margin: 0; color: #334155; font-size: clamp(1.2rem, 3vw, 1.55rem); }
 
-.input-card, .practice-card, .library-card, .history-card, .pronunciation-card {
+.input-card, .practice-card, .library-card, .history-card, .pronunciation-card, .file-import-card {
   border: 1px solid rgba(126, 142, 157, .16); border-radius: 28px; background: rgba(255,255,255,.88);
   box-shadow: 0 14px 44px rgba(93, 78, 62, .08);
 }
@@ -60,6 +60,30 @@ textarea:focus { border-color: #79baae; box-shadow: 0 0 0 4px rgba(121,186,174,.
 .import-panel { display: grid; gap: 10px; margin-top: 10px; padding: 17px; border-radius: 17px; background: #f3faf8; }
 .import-panel label { color: #56746f; font-weight: 750; }
 .import-panel button { justify-self: end; }
+
+.file-import-card { margin-top: 14px; overflow: hidden; }
+.file-import-toggle {
+  display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 74px;
+  padding: 15px 28px; border: 0; border-radius: 28px; text-align: left; background: transparent;
+}
+.file-import-toggle > span:first-child { display: flex; flex-direction: column; gap: 2px; }
+.file-import-toggle strong { color: #405261; font-size: 1.05rem; }
+.file-import-toggle > span:last-child { color: #5b9d91; font-size: 1.6rem; }
+.file-import-content { padding: 2px 28px 24px; border-top: 1px solid #edf0ef; }
+.file-import-content > p:first-child { margin: 17px 0 14px; color: #718087; }
+.file-picker {
+  display: flex; align-items: center; justify-content: center; min-height: 54px; padding: 0 18px;
+  border: 2px dashed #8fc8bd; border-radius: 15px; color: #477f75; background: #f2faf8; font-weight: 800; cursor: pointer;
+}
+.file-picker:hover { background: #eaf7f4; }
+.file-picker.disabled { cursor: wait; opacity: .6; }
+.file-picker input { position: absolute; width: 1px; height: 1px; min-height: 0; padding: 0; opacity: 0; pointer-events: none; }
+.import-file-name { margin: 9px 2px 0; color: #728087; font-size: .86rem; overflow-wrap: anywhere; }
+.file-import-content progress { width: 100%; height: 12px; margin-top: 12px; accent-color: #65aa9d; }
+.extracted-text-editor { display: flex; flex-direction: column; gap: 7px; margin-top: 16px; color: #56746f; font-size: .86rem; font-weight: 750; }
+.extracted-text-editor textarea { font-size: 1.05rem; }
+.use-import-button { width: 100%; margin-top: 12px; }
+.import-privacy { margin: 10px 2px 0 !important; color: #89939e !important; font-size: .78rem; }
 
 .library-card { margin-top: 22px; padding: 23px 28px; }
 .history-card, .pronunciation-card { margin-top: 22px; padding: 23px 28px; }
@@ -162,6 +186,9 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
   .section-menu { top: 10px; right: 10px; }
   .menu-button { width: 48px; min-height: 48px; }
   .input-card, .practice-card, .library-card, .history-card, .pronunciation-card { padding: 20px 17px; border-radius: 22px; }
+  .file-import-card { border-radius: 22px; }
+  .file-import-toggle { min-height: 68px; padding: 13px 17px; border-radius: 22px; }
+  .file-import-content { padding: 2px 17px 20px; }
   .input-row { flex-direction: column; }
   .parse-button { width: 100%; }
   .save-row, .saved-item { align-items: stretch; flex-direction: column; }

@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 const LINKS = [
   { href: '#input', label: 'Enter text' },
+  { href: '#file-import', label: 'Import image / PDF' },
   { href: '#practice', label: 'Watch & quiz' },
   { href: '#pronunciation', label: 'Listen & say' },
   { href: '#saved-sets', label: 'My word sets' },

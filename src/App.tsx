@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { CharacterInput } from './components/CharacterInput'
 import { CharacterList } from './components/CharacterList'
 import { Controls } from './components/Controls'
+import { FileImportPanel } from './components/FileImportPanel'
 import { QuizControls } from './components/QuizControls'
 import { HistoryPanel } from './components/HistoryPanel'
 import { PronunciationPanel } from './components/PronunciationPanel'
@@ -124,6 +125,11 @@ function App() {
 
       <CharacterInput value={input} onChange={setInput} onSubmit={parseInput} onImport={loadText} />
       {inputMessage && <p className="input-error" role="alert">{inputMessage}</p>}
+
+      <FileImportPanel onUseText={(text) => {
+        loadText(text)
+        window.requestAnimationFrame(() => document.querySelector('#input')?.scrollIntoView({ behavior: 'smooth' }))
+      }} />
 
       <section id="practice" className="practice-card" aria-labelledby="practice-heading">
         <div className="practice-heading">
