@@ -49,10 +49,14 @@ export const StrokeAnimator = forwardRef<StrokeAnimatorHandle, StrokeAnimatorPro
       const generation = generationRef.current
       updateState('loading')
 
+      const getDisplaySize = () => Math.max(1, Math.round(targetRef.current?.getBoundingClientRect().width ?? 360))
+      const displaySize = getDisplaySize()
+      const getPadding = (size: number) => Math.round(size * (28 / 360))
+
       const writer = HanziWriter.create(targetRef.current, character, {
-        width: 360,
-        height: 360,
-        padding: 28,
+        width: displaySize,
+        height: displaySize,
+        padding: getPadding(displaySize),
         showOutline: true,
         showCharacter: mode === 'watch',
         strokeColor: '#334155',
@@ -74,7 +78,19 @@ export const StrokeAnimator = forwardRef<StrokeAnimatorHandle, StrokeAnimatorPro
       })
       writerRef.current = writer
 
+      const resizeObserver = new ResizeObserver(() => {
+        if (generation !== generationRef.current) return
+        const nextSize = getDisplaySize()
+        writer.updateDimensions({
+          width: nextSize,
+          height: nextSize,
+          padding: getPadding(nextSize),
+        })
+      })
+      resizeObserver.observe(targetRef.current)
+
       return () => {
+        resizeObserver.disconnect()
         generationRef.current += 1
         writerRef.current = null
       }

@@ -96,7 +96,8 @@ button.primary { border-color: #ef7f6d; color: white; background: #ef7f6d; }
     linear-gradient(-45deg, transparent calc(50% - .7px), #edf5f3 calc(50% - .7px), #edf5f3 calc(50% + .7px), transparent calc(50% + .7px));
   box-shadow: inset 0 0 0 7px white, 0 12px 30px rgba(82, 126, 118, .12);
 }
-.writer-target, .writer-target svg { width: 100% !important; height: 100% !important; display: block; }
+.writer-target { width: 100%; height: 100%; }
+.writer-target svg { display: block; }
 .animator-status { min-height: 24px; margin: 12px 0 3px; color: #76858c; font-weight: 650; }
 .character-list { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 12px auto 22px; }
 .character-chip { width: 51px; min-height: 51px; padding: 0; border-radius: 14px; font-size: 1.55rem; font-weight: 500; }
