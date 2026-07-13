@@ -22,6 +22,7 @@ html { scroll-behavior: smooth; }
 section[id] { scroll-margin-top: 78px; }
 
 button, textarea, select, input { font: inherit; }
+::placeholder { color: #b0b8c1; opacity: 1; }
 button, select { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: 0.46; }
 
