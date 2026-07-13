@@ -35,15 +35,15 @@ export function CharacterInput({ value, onChange, onSubmit, onImport }: Characte
       </div>
       <p className="input-hint">Spaces, punctuation, English letters and numbers are ignored.</p>
       <div className="input-actions">
-        {value && (
-          <button className="text-button" type="button" onClick={() => onChange('')}>
+        <button className="text-button" type="button" onClick={() => setShowImport((shown) => !shown)} aria-expanded={showImport}>
+          {showImport ? 'Hide paste list' : 'Paste a word list'}
+        </button>
+        {value && <>
+          <span className="input-actions-sep" aria-hidden="true">·</span>
+          <button className="text-button text-button-muted" type="button" onClick={() => onChange('')}>
             Clear text
           </button>
-        )}
-        {value && <span className="input-actions-sep" aria-hidden="true">·</span>}
-        <button className="text-button text-button-muted" type="button" onClick={() => setShowImport((shown) => !shown)} aria-expanded={showImport}>
-          {showImport ? 'Hide paste list' : 'Paste / import a word list'}
-        </button>
+        </>}
       </div>
       {showImport && (
         <div className="import-panel">
