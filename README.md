@@ -2,6 +2,8 @@
 
 A local-first, installable, child-friendly Chinese character stroke-order and tracing app built with React, TypeScript, Vite, Hanzi Writer, and pinyin-pro.
 
+Full handover documentation: [`docs/SPECIFICATION.md`](docs/SPECIFICATION.md)
+
 ## Run locally
 
 Requirements: Node.js 20.19+ or 22.12+ and npm.
