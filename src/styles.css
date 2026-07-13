@@ -235,6 +235,9 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
   .input-row { flex-direction: column; }
   .parse-button { width: 100%; }
   .save-row, .saved-item { align-items: stretch; flex-direction: column; }
+  .vocab-item { flex-direction: column; align-items: stretch; }
+  .vocab-item-main { justify-content: space-between; }
+  .vocab-item-actions { justify-content: flex-end; }
   .saved-actions { display: grid; grid-template-columns: 1fr 1fr; }
   .quiz-controls { flex-direction: column; }
   .quiz-controls .control-group { display: grid; grid-template-columns: 1fr 1fr; }
@@ -270,13 +273,13 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
 .vocabulary-card { margin-top: 22px; padding: 23px 28px; }
 .vocab-list { display: grid; gap: 8px; margin-top: 14px; }
 .vocab-list-scroll { max-height: 420px; overflow-y: auto; padding-right: 4px; }
-.vocab-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid #e9eeee; border-radius: 13px; background: #fffefa; }
-.vocab-item-main { display: flex; align-items: baseline; gap: 8px; flex: 0 0 auto; min-width: 100px; }
+.vocab-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid #e9eeee; border-radius: 13px; background: #fffefa; flex-wrap: wrap; }
+.vocab-item-main { display: flex; align-items: baseline; gap: 8px; flex: 0 0 auto; }
 .vocab-word { font-size: 1.15rem; font-weight: 800; color: #334155; }
 .vocab-pinyin { color: #518a80; font-weight: 600; font-size: .85rem; }
 .vocab-item-meaning { flex: 1; min-width: 0; }
-.vocab-ja { display: block; color: #445566; font-size: .88rem; font-weight: 600; }
-.vocab-en { display: block; color: #89939e; font-size: .82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vocab-ja { display: block; color: #445566; font-size: .88rem; font-weight: 600; word-break: break-word; }
+.vocab-en { display: block; color: #89939e; font-size: .82rem; word-break: break-word; }
 .vocab-item-actions { display: flex; gap: 5px; flex: 0 0 auto; }
 .vocab-item-actions button { min-height: 36px; min-width: 36px; padding: 0; border-radius: 10px; font-size: .9rem; }
 .vocab-toggle { margin-top: 10px; }

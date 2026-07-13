@@ -37,6 +37,10 @@ async function fetchJaTranslation(word: string, definitions: string[], proxyUrl:
   }
 }
 
+function shortenDef(d: string): string {
+  return d.replace(/\s*\(Note:.*?\)/gi, '').replace(/\s*\((?=[^)]{60,})[^)]*\)/g, '').trim()
+}
+
 export function WordDefinitionPanel({ word, aiProxyUrl, isSaved, onSave }: WordDefinitionPanelProps) {
   const [defs, setDefs] = useState<WordDefinition[]>([])
   const [ja, setJa] = useState<JaTranslation | null>(null)
@@ -75,7 +79,7 @@ export function WordDefinitionPanel({ word, aiProxyUrl, isSaved, onSave }: WordD
 
   function handleSave() {
     if (isSaved || defs.length === 0) return
-    const allDefs = defs.flatMap((r) => r.definitions)
+    const allDefs = defs.flatMap((r) => r.definitions).map(shortenDef).filter(Boolean)
     onSave({
       word,
       pinyin: defs[0].pinyin,
@@ -96,7 +100,7 @@ export function WordDefinitionPanel({ word, aiProxyUrl, isSaved, onSave }: WordD
             {ja?.pos && i === 0 && <span className="word-def-pos">{ja.pos}</span>}
           </div>
           <ul className="word-def-list">
-            {def.definitions.map((d, j) => (
+            {def.definitions.map((d) => shortenDef(d)).filter(Boolean).map((d, j) => (
               <li key={j}>{d}</li>
             ))}
           </ul>

@@ -5,6 +5,7 @@ const LINKS = [
   { href: '#file-import', label: 'Import image / PDF' },
   { href: '#practice', label: 'Watch & quiz' },
   { href: '#pronunciation', label: 'Listen & say' },
+  { href: '#vocabulary', label: 'My vocabulary' },
   { href: '#saved-sets', label: 'My word sets' },
   { href: '#history', label: 'Recent practice' },
 ]
