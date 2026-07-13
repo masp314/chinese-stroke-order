@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 
 const STORAGE_KEY = 'hanzi-steps.ai-settings.v1'
+const DEFAULT_PROXY_URL = 'https://hanzi-ai-proxy.masuda-a4c.workers.dev'
 
 interface AiSettings {
   proxyUrl: string
@@ -14,7 +15,7 @@ function load(): AiSettings {
       if (typeof parsed.proxyUrl === 'string') return { proxyUrl: parsed.proxyUrl }
     }
   } catch { /* ignore corrupt data */ }
-  return { proxyUrl: '' }
+  return { proxyUrl: DEFAULT_PROXY_URL }
 }
 
 function persist(settings: AiSettings) {
