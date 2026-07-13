@@ -33,26 +33,32 @@ export function useAiSettings() {
   const [settings, setSettings] = useState(load)
 
   const setProxyUrl = useCallback((url: string) => {
-    const next: AiSettings = { ...settings, proxyUrl: url.trim() }
-    setSettings(next)
-    persist(next)
-  }, [settings])
+    setSettings((prev) => {
+      const next: AiSettings = { ...prev, proxyUrl: url.trim() }
+      persist(next)
+      return next
+    })
+  }, [])
 
   const unlock = useCallback((code: string): boolean => {
     if (code.trim() === UNLOCK_CODE) {
-      const next: AiSettings = { ...settings, unlocked: true }
-      setSettings(next)
-      persist(next)
+      setSettings((prev) => {
+        const next: AiSettings = { ...prev, unlocked: true }
+        persist(next)
+        return next
+      })
       return true
     }
     return false
-  }, [settings])
+  }, [])
 
   const lock = useCallback(() => {
-    const next: AiSettings = { ...settings, unlocked: false }
-    setSettings(next)
-    persist(next)
-  }, [settings])
+    setSettings((prev) => {
+      const next: AiSettings = { ...prev, unlocked: false }
+      persist(next)
+      return next
+    })
+  }, [])
 
   return {
     proxyUrl: settings.proxyUrl,

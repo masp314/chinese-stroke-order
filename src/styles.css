@@ -248,3 +248,18 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
   .listen-action { padding: 14px; }
   .method-options { grid-template-columns: 1fr; }
 }
+
+.word-def-panel { margin-top: 14px; padding: 14px 16px; border-radius: 14px; background: #f7faf9; border: 1px solid #e5eeeb; }
+.word-def-loading, .word-def-empty { margin: 0; color: #89939e; font-size: .86rem; }
+.word-def-entry { margin-bottom: 8px; }
+.word-def-entry:last-child { margin-bottom: 0; }
+.word-def-header { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.word-def-char { font-size: 1.4rem; font-weight: 800; color: #334155; }
+.word-def-trad { color: #89939e; font-size: .9rem; }
+.word-def-pinyin { color: #518a80; font-weight: 600; font-size: .95rem; }
+.word-def-pos { padding: 1px 8px; border-radius: 8px; background: #e8f4f0; color: #3e746a; font-size: .75rem; font-weight: 700; }
+.word-def-list { margin: 4px 0 0; padding-left: 20px; color: #445566; font-size: .88rem; line-height: 1.5; }
+.word-def-list li { margin-bottom: 2px; }
+.word-def-ja { margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5eeeb; display: flex; align-items: baseline; gap: 8px; }
+.word-def-ja-label { padding: 1px 8px; border-radius: 8px; background: #fef3e8; color: #b8860b; font-size: .75rem; font-weight: 700; white-space: nowrap; }
+.word-def-ja span:last-child { color: #445566; font-size: .9rem; }

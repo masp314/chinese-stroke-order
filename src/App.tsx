@@ -232,6 +232,7 @@ function App() {
         speechMessage={speech.message}
         voices={speech.voices}
         selectedVoiceURI={speech.selectedVoiceURI}
+        aiProxyUrl={aiSettings.proxyUrl}
         onPinyinChange={setPinyinOverride}
         onUseAutomatic={() => setPinyinOverride(undefined)}
         onCurrentIndexChange={selectCharacter}
