@@ -9,7 +9,19 @@ const SPEECH_RATES: Record<SpeechSpeed, number> = {
 
 export function useSpeech() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState('')
   const [message, setMessage] = useState('')
+
+  const normalizeLanguage = (language: string) => language.toLowerCase().replace('_', '-')
+  const chineseVoices = voices.filter((voice) => {
+    const language = normalizeLanguage(voice.lang)
+    return language.startsWith('zh') || language.startsWith('cmn') || language.startsWith('yue')
+  })
+  const recommendedVoice = chineseVoices.find((voice) => {
+    const language = normalizeLanguage(voice.lang)
+    return language === 'zh-cn' || language === 'cmn-cn'
+  })
+  const effectiveVoiceURI = selectedVoiceURI || recommendedVoice?.voiceURI || ''
 
   useEffect(() => {
     if (!('speechSynthesis' in window)) return
@@ -27,17 +39,21 @@ export function useSpeech() {
     }
 
     const availableVoices = voices.length ? voices : window.speechSynthesis.getVoices()
-    const chineseVoice = availableVoices.find((voice) => voice.lang.toLowerCase() === 'zh-cn')
-      ?? availableVoices.find((voice) => voice.lang.toLowerCase().startsWith('zh'))
+    if (!voices.length && availableVoices.length) setVoices(availableVoices)
+    const chineseVoice = availableVoices.find((voice) => voice.voiceURI === effectiveVoiceURI)
+      ?? availableVoices.find((voice) => {
+        const language = normalizeLanguage(voice.lang)
+        return language === 'zh-cn' || language === 'cmn-cn'
+      })
 
     if (!chineseVoice) {
-      setMessage('No Chinese voice is available on this device. Add a Chinese voice in the device language settings.')
+      setMessage('No Mainland Mandarin voice (zh-CN) is selected. Choose a voice below or add Chinese (China) speech in the device settings.')
       return
     }
 
     window.speechSynthesis.cancel()
     const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = 'zh-CN'
+    utterance.lang = chineseVoice.lang
     utterance.voice = chineseVoice
     utterance.rate = SPEECH_RATES[speed]
     utterance.onstart = () => setMessage('Speaking…')
@@ -46,5 +62,11 @@ export function useSpeech() {
     window.speechSynthesis.speak(utterance)
   }
 
-  return { speak, message }
+  return {
+    speak,
+    message,
+    voices: chineseVoices,
+    selectedVoiceURI: effectiveVoiceURI,
+    setSelectedVoiceURI,
+  }
 }

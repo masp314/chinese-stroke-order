@@ -88,17 +88,28 @@ input:focus { border-color: #79baae; box-shadow: 0 0 0 4px rgba(121,186,174,.15)
 .pronunciation-text span { color: #c26051; font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 750; text-align: center; }
 .pinyin-editor { display: flex; flex-direction: column; gap: 7px; color: #5f707a; font-size: .86rem; font-weight: 750; }
 .pinyin-editor small { color: #90999d; font-weight: 500; }
-.current-pronunciation { display: grid; grid-template-columns: auto minmax(110px, 180px) 1fr; align-items: center; gap: 12px; margin-top: 15px; padding: 11px 14px; border-radius: 15px; background: #f2f8f6; color: #667a76; }
-.current-pronunciation select { min-height: 44px; color: #334155; background: white; font-size: 1.1rem; }
-.current-pronunciation span:last-child { color: #ba6254; font-size: 1.05rem; font-weight: 750; }
-.speech-selection { margin: 15px 0 0; padding: 12px 14px 14px; border: 1px solid #e2ebe9; border-radius: 15px; }
-.speech-selection legend { padding: 0 6px; color: #63766f; font-size: .83rem; font-weight: 750; }
-.speech-selection > div { display: flex; flex-wrap: wrap; gap: 7px; }
+.listen-actions { display: grid; gap: 12px; margin-top: 18px; }
+.listen-action { padding: 17px; border: 2px solid transparent; border-radius: 18px; }
+.listen-action-heading { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 13px; }
+.listen-action-heading h3 { margin: 0; color: #3e5060; font-size: 1rem; }
+.listen-action-heading p { margin: 2px 0 0; color: #7d898f; font-size: .82rem; }
+.action-number { display: grid; place-items: center; flex: 0 0 auto; width: 27px; height: 27px; border-radius: 50%; color: white; font-weight: 850; }
+.single-listen { border-color: #cfe9e4; background: #f0f9f7; }
+.single-listen .action-number { background: #5aa99a; }
+.selected-listen { border-color: #f0dfab; background: #fffaf0; }
+.selected-listen .action-number { background: #dfa747; }
+.sentence-listen { border-color: #f3c9c1; background: #fff3ef; }
+.sentence-listen .action-number { background: #e77c6b; }
+.single-listen-controls { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(210px, auto); gap: 10px; align-items: end; }
+.single-listen-controls label, .sentence-listen-controls label { display: flex; flex-direction: column; gap: 5px; color: #637078; font-size: .78rem; font-weight: 750; }
+.single-listen-controls button { border-color: #4f9f90; color: white; background: #4f9f90; }
+.selection-row { display: grid; grid-template-columns: 1fr minmax(190px, auto); gap: 10px; align-items: center; }
+.speech-selection { display: flex; flex-wrap: wrap; gap: 7px; min-height: 48px; }
 .speech-selection button { width: 43px; min-height: 43px; padding: 0; font-size: 1.2rem; font-weight: 600; }
-.speech-selection button.selected { border-color: #ef7f6d; color: #b55345; background: #fff0eb; box-shadow: 0 0 0 2px rgba(239,127,109,.12); }
-.speech-speed { display: flex; align-items: center; gap: 12px; margin-top: 14px; color: #637078; font-size: .85rem; font-weight: 750; }
-.speech-speed select { min-width: 140px; }
-.speech-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+.speech-selection button.selected { border-color: #dca33d; color: #8e6418; background: #fff0bd; box-shadow: 0 0 0 2px rgba(220,163,61,.15); }
+.selected-speak-button { border-color: #dca33d; color: #704e12; background: #f5c969; }
+.sentence-listen-controls { display: grid; grid-template-columns: minmax(190px, 1fr) minmax(110px, 150px) minmax(220px, auto); gap: 10px; align-items: end; }
+.sentence-listen-controls button { border-color: #e77c6b; color: white; background: #e77c6b; }
 
 button, select {
   min-height: 48px; border: 1px solid #dfe5e5; border-radius: 14px; padding: 0 17px;
@@ -163,7 +174,6 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
   .speed-control { order: -1; }
   .speed-control select { width: 100%; }
   .control-group button { padding: 0 10px; }
-  .speech-actions { grid-template-columns: 1fr; }
-  .current-pronunciation { grid-template-columns: 1fr; align-items: stretch; }
-  .speech-speed { align-items: stretch; flex-direction: column; gap: 6px; }
+  .single-listen-controls, .selection-row, .sentence-listen-controls { grid-template-columns: 1fr; }
+  .listen-action { padding: 14px; }
 }

@@ -207,11 +207,14 @@ function App() {
         selectedIndices={speechSelection}
         speechSpeed={speechSpeed}
         speechMessage={speech.message}
+        voices={speech.voices}
+        selectedVoiceURI={speech.selectedVoiceURI}
         onPinyinChange={setPinyinOverride}
         onUseAutomatic={() => setPinyinOverride(undefined)}
         onCurrentIndexChange={selectCharacter}
         onToggleSelectedIndex={toggleSpeechSelection}
         onSpeechSpeedChange={setSpeechSpeed}
+        onVoiceChange={speech.setSelectedVoiceURI}
         onSpeakCharacter={() => speech.speak(currentCharacter ?? '', speechSpeed)}
         onSpeakSelection={() => speech.speak(speechSelection.map((index) => characters[index]).join(''), speechSpeed)}
         onSpeakText={() => speech.speak(chineseText, speechSpeed)}
