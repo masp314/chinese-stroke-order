@@ -43,7 +43,7 @@ main { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 38px 0 26
 .eyebrow { margin: 0 0 4px; color: #df725f; font-size: .76rem; font-weight: 800; letter-spacing: .16em; }
 h2 { margin: 0; color: #334155; font-size: clamp(1.2rem, 3vw, 1.55rem); }
 
-.input-card, .practice-card, .library-card, .history-card, .pronunciation-card, .file-import-card {
+.input-card, .practice-card, .library-card, .history-card, .pronunciation-card, .file-import-card, .vocabulary-card {
   border: 1px solid rgba(126, 142, 157, .16); border-radius: 28px; background: rgba(255,255,255,.88);
   box-shadow: 0 14px 44px rgba(93, 78, 62, .08);
 }
@@ -226,7 +226,7 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
   .hero p:last-child { font-size: .92rem; }
   .section-menu { top: 10px; right: 10px; }
   .menu-button { width: 48px; min-height: 48px; }
-  .input-card, .practice-card, .library-card, .history-card, .pronunciation-card { padding: 20px 17px; border-radius: 22px; }
+  .input-card, .practice-card, .library-card, .history-card, .pronunciation-card, .vocabulary-card { padding: 20px 17px; border-radius: 22px; }
   .file-import-card { border-radius: 22px; }
   .file-import-toggle { min-height: 68px; padding: 13px 17px; border-radius: 22px; }
   .file-import-content { padding: 2px 17px 20px; }
@@ -260,6 +260,23 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
 .word-def-pos { padding: 1px 8px; border-radius: 8px; background: #e8f4f0; color: #3e746a; font-size: .75rem; font-weight: 700; }
 .word-def-list { margin: 4px 0 0; padding-left: 20px; color: #445566; font-size: .88rem; line-height: 1.5; }
 .word-def-list li { margin-bottom: 2px; }
-.word-def-ja { margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5eeeb; display: flex; align-items: baseline; gap: 8px; }
+.word-def-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5eeeb; gap: 12px; }
+.word-def-ja { display: flex; align-items: baseline; gap: 8px; flex: 1; }
 .word-def-ja-label { padding: 1px 8px; border-radius: 8px; background: #fef3e8; color: #b8860b; font-size: .75rem; font-weight: 700; white-space: nowrap; }
 .word-def-ja span:last-child { color: #445566; font-size: .9rem; }
+.word-def-save { flex: 0 0 auto; min-height: 34px; padding: 0 14px; border-radius: 10px; font-size: .85rem; font-weight: 700; }
+.word-def-save.saved { background: #e8f4f0; color: #3e746a; border-color: #d0e8e2; }
+
+.vocabulary-card { margin-top: 22px; padding: 23px 28px; }
+.vocab-list { display: grid; gap: 8px; margin-top: 14px; }
+.vocab-list-scroll { max-height: 420px; overflow-y: auto; padding-right: 4px; }
+.vocab-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid #e9eeee; border-radius: 13px; background: #fffefa; }
+.vocab-item-main { display: flex; align-items: baseline; gap: 8px; flex: 0 0 auto; min-width: 100px; }
+.vocab-word { font-size: 1.15rem; font-weight: 800; color: #334155; }
+.vocab-pinyin { color: #518a80; font-weight: 600; font-size: .85rem; }
+.vocab-item-meaning { flex: 1; min-width: 0; }
+.vocab-ja { display: block; color: #445566; font-size: .88rem; font-weight: 600; }
+.vocab-en { display: block; color: #89939e; font-size: .82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vocab-item-actions { display: flex; gap: 5px; flex: 0 0 auto; }
+.vocab-item-actions button { min-height: 36px; min-width: 36px; padding: 0; border-radius: 10px; font-size: .9rem; }
+.vocab-toggle { margin-top: 10px; }

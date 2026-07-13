@@ -17,6 +17,8 @@ interface PronunciationPanelProps {
   voices: Array<{ voiceURI: string; name: string; lang: string }>
   selectedVoiceURI: string
   aiProxyUrl: string
+  isWordSaved: (word: string) => boolean
+  onSaveWord: (data: { word: string; pinyin: string; pos: string; definitionsEn: string[]; definitionJa: string }) => void
   onPinyinChange: (value: string) => void
   onUseAutomatic: () => void
   onSpeakCharacter: () => void
@@ -138,7 +140,12 @@ export function PronunciationPanel(props: PronunciationPanelProps) {
             </div>
             <button className="selected-speak-button" type="button" onClick={props.onSpeakSelection} disabled={!props.selectedIndices.length}>🔊 Speak selected</button>
           </div>
-          <WordDefinitionPanel word={props.selectedIndices.map((i) => props.characters[i]).join('')} aiProxyUrl={props.aiProxyUrl} />
+          <WordDefinitionPanel
+            word={props.selectedIndices.map((i) => props.characters[i]).join('')}
+            aiProxyUrl={props.aiProxyUrl}
+            isSaved={props.isWordSaved(props.selectedIndices.map((i) => props.characters[i]).join(''))}
+            onSave={props.onSaveWord}
+          />
         </section>
 
       </div>

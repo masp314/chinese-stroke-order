@@ -8,12 +8,14 @@ import { QuizControls } from './components/QuizControls'
 import { HistoryPanel } from './components/HistoryPanel'
 import { PronunciationPanel } from './components/PronunciationPanel'
 import { SavedWordSets } from './components/SavedWordSets'
+import { VocabularyPanel } from './components/VocabularyPanel'
 import { SectionMenu } from './components/SectionMenu'
 import { StrokeAnimator, type StrokeAnimatorHandle } from './components/StrokeAnimator'
 import { useAiSettings } from './hooks/useAiSettings'
 import { useHistory } from './hooks/useHistory'
 import { useSavedWordSets } from './hooks/useSavedWordSets'
 import { useSpeech } from './hooks/useSpeech'
+import { useVocabulary } from './hooks/useVocabulary'
 import type { PlaybackState, PracticeMode, SavedWordSet, SpeechSpeed, Speed } from './types'
 import { extractChineseCharacters } from './utils/characters'
 import { getPinyin } from './utils/pinyin'
@@ -39,6 +41,7 @@ function App() {
   const history = useHistory()
   const speech = useSpeech()
   const aiSettings = useAiSettings()
+  const vocabulary = useVocabulary()
 
   const chineseText = characters.join('')
   const autoPinyin = useMemo(() => getPinyin(chineseText), [chineseText])
@@ -233,6 +236,8 @@ function App() {
         voices={speech.voices}
         selectedVoiceURI={speech.selectedVoiceURI}
         aiProxyUrl={aiSettings.proxyUrl}
+        isWordSaved={vocabulary.isSaved}
+        onSaveWord={vocabulary.save}
         onPinyinChange={setPinyinOverride}
         onUseAutomatic={() => setPinyinOverride(undefined)}
         onCurrentIndexChange={selectCharacter}
@@ -242,6 +247,12 @@ function App() {
         onSpeakCharacter={() => speech.speak(currentCharacter ?? '', speechSpeed)}
         onSpeakSelection={() => speech.speak(speechSelection.map((index) => characters[index]).join(''), speechSpeed)}
         onSpeakText={() => speech.speak(chineseText, speechSpeed)}
+      />
+
+      <VocabularyPanel
+        entries={vocabulary.entries}
+        onDelete={vocabulary.remove}
+        onSpeak={(text) => speech.speak(text, speechSpeed)}
       />
 
       <SavedWordSets

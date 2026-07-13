@@ -4,6 +4,8 @@ import { lookupWord, type WordDefinition } from '../utils/dictionary'
 interface WordDefinitionPanelProps {
   word: string
   aiProxyUrl: string
+  isSaved: boolean
+  onSave: (data: { word: string; pinyin: string; pos: string; definitionsEn: string[]; definitionJa: string }) => void
 }
 
 interface JaTranslation {
@@ -35,7 +37,7 @@ async function fetchJaTranslation(word: string, definitions: string[], proxyUrl:
   }
 }
 
-export function WordDefinitionPanel({ word, aiProxyUrl }: WordDefinitionPanelProps) {
+export function WordDefinitionPanel({ word, aiProxyUrl, isSaved, onSave }: WordDefinitionPanelProps) {
   const [defs, setDefs] = useState<WordDefinition[]>([])
   const [ja, setJa] = useState<JaTranslation | null>(null)
   const [loading, setLoading] = useState(false)
@@ -69,7 +71,19 @@ export function WordDefinitionPanel({ word, aiProxyUrl }: WordDefinitionPanelPro
 
   if (!word) return null
   if (loading) return <div className="word-def-panel"><p className="word-def-loading">Loading dictionary...</p></div>
-  if (defs.length === 0) return <div className="word-def-panel"><p className="word-def-empty">No dictionary entry for "{word}"</p></div>
+  if (defs.length === 0) return <div className="word-def-panel"><p className="word-def-empty">No dictionary entry for &ldquo;{word}&rdquo;</p></div>
+
+  function handleSave() {
+    if (isSaved || defs.length === 0) return
+    const allDefs = defs.flatMap((r) => r.definitions)
+    onSave({
+      word,
+      pinyin: defs[0].pinyin,
+      pos: ja?.pos ?? '',
+      definitionsEn: allDefs,
+      definitionJa: ja?.ja ?? '',
+    })
+  }
 
   return (
     <div className="word-def-panel">
@@ -88,12 +102,17 @@ export function WordDefinitionPanel({ word, aiProxyUrl }: WordDefinitionPanelPro
           </ul>
         </div>
       ))}
-      {ja?.ja && (
-        <div className="word-def-ja">
-          <span className="word-def-ja-label">日本語</span>
-          <span>{ja.ja}</span>
-        </div>
-      )}
+      <div className="word-def-footer">
+        {ja?.ja && (
+          <div className="word-def-ja">
+            <span className="word-def-ja-label">日本語</span>
+            <span>{ja.ja}</span>
+          </div>
+        )}
+        <button type="button" className={`word-def-save ${isSaved ? 'saved' : ''}`} onClick={handleSave} disabled={isSaved}>
+          {isSaved ? '✓ Saved' : '＋ Save'}
+        </button>
+      </div>
     </div>
   )
 }
