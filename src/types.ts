@@ -4,6 +4,8 @@ export type PlaybackState = 'idle' | 'loading' | 'playing' | 'quizzing' | 'unsup
 
 export type PracticeMode = 'watch' | 'quiz'
 
+export type SpeechSpeed = 'slow' | 'normal' | 'fast'
+
 export interface SavedWordSet {
   id: string
   title: string

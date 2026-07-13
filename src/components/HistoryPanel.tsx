@@ -8,7 +8,7 @@ interface HistoryPanelProps {
 
 export function HistoryPanel({ items, onLoad, onClear }: HistoryPanelProps) {
   return (
-    <section className="history-card" aria-labelledby="history-heading">
+    <section id="history" className="history-card" aria-labelledby="history-heading">
       <div className="section-title-row">
         <div>
           <p className="eyebrow">RECENT PRACTICE</p>

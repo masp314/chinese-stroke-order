@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { SavedWordSet } from '../types'
 
 interface SavedWordSetsProps {
@@ -14,6 +14,17 @@ interface SavedWordSetsProps {
 export function SavedWordSets({ currentText, currentPinyin, sets, storageError, onSave, onLoad, onDelete }: SavedWordSetsProps) {
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState('')
+  const titleSuggestions = useMemo(() => {
+    const now = new Date()
+    const date = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(now)
+    const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(now)
+    const shortText = currentText.trim().replace(/\s+/g, ' ').slice(0, 16)
+    return Array.from(new Set([
+      `Practice ${date}`,
+      shortText && `${shortText}${currentText.trim().length > 16 ? '…' : ''}`,
+      `Practice ${time}`,
+    ].filter(Boolean)))
+  }, [currentText])
 
   function saveCurrent() {
     if (!title.trim()) {
@@ -31,7 +42,7 @@ export function SavedWordSets({ currentText, currentPinyin, sets, storageError, 
   }
 
   return (
-    <section className="library-card" aria-labelledby="saved-heading">
+    <section id="saved-sets" className="library-card" aria-labelledby="saved-heading">
       <div className="section-title-row">
         <div>
           <p className="eyebrow">MY WORD SETS</p>
@@ -49,6 +60,12 @@ export function SavedWordSets({ currentText, currentPinyin, sets, storageError, 
           aria-label="Saved set title"
         />
         <button type="button" onClick={saveCurrent}>＋ Save current text</button>
+      </div>
+      <div className="title-suggestions" aria-label="Suggested titles">
+        <span>Suggested titles:</span>
+        {titleSuggestions.map((suggestion) => (
+          <button type="button" onClick={() => setTitle(suggestion)} key={suggestion}>{suggestion}</button>
+        ))}
       </div>
       {(message || storageError) && <p className={storageError ? 'inline-message error' : 'inline-message'} role="status">{storageError || message}</p>}
       {sets.length ? (

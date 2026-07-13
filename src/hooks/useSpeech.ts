@@ -1,4 +1,11 @@
 import { useEffect, useState } from 'react'
+import type { SpeechSpeed } from '../types'
+
+const SPEECH_RATES: Record<SpeechSpeed, number> = {
+  slow: 0.55,
+  normal: 0.78,
+  fast: 1,
+}
 
 export function useSpeech() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
@@ -12,7 +19,7 @@ export function useSpeech() {
     return () => window.speechSynthesis.removeEventListener('voiceschanged', updateVoices)
   }, [])
 
-  function speak(text: string) {
+  function speak(text: string, speed: SpeechSpeed) {
     if (!text) return
     if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
       setMessage('Speech is not supported by this browser.')
@@ -32,7 +39,7 @@ export function useSpeech() {
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = 'zh-CN'
     utterance.voice = chineseVoice
-    utterance.rate = 0.82
+    utterance.rate = SPEECH_RATES[speed]
     utterance.onstart = () => setMessage('Speaking…')
     utterance.onend = () => setMessage('')
     utterance.onerror = () => setMessage('Pronunciation could not be played on this device.')

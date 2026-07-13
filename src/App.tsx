@@ -6,11 +6,12 @@ import { QuizControls } from './components/QuizControls'
 import { HistoryPanel } from './components/HistoryPanel'
 import { PronunciationPanel } from './components/PronunciationPanel'
 import { SavedWordSets } from './components/SavedWordSets'
+import { SectionMenu } from './components/SectionMenu'
 import { StrokeAnimator, type StrokeAnimatorHandle } from './components/StrokeAnimator'
 import { useHistory } from './hooks/useHistory'
 import { useSavedWordSets } from './hooks/useSavedWordSets'
 import { useSpeech } from './hooks/useSpeech'
-import type { PlaybackState, PracticeMode, SavedWordSet, Speed } from './types'
+import type { PlaybackState, PracticeMode, SavedWordSet, SpeechSpeed, Speed } from './types'
 import { extractChineseCharacters } from './utils/characters'
 import { getPinyin } from './utils/pinyin'
 
@@ -26,6 +27,8 @@ function App() {
   const [isPlayingAll, setIsPlayingAll] = useState(false)
   const [inputMessage, setInputMessage] = useState('')
   const [pinyinOverride, setPinyinOverride] = useState<string | undefined>()
+  const [speechSpeed, setSpeechSpeed] = useState<SpeechSpeed>('normal')
+  const [speechSelection, setSpeechSelection] = useState<number[]>([0])
   const animatorRef = useRef<StrokeAnimatorHandle>(null)
   const runIdRef = useRef(0)
   const savedWordSets = useSavedWordSets()
@@ -51,6 +54,7 @@ function App() {
     const parsed = extractChineseCharacters(text)
     setCharacters(parsed)
     setCurrentIndex(0)
+    setSpeechSelection(parsed.length ? [0] : [])
     setPinyinOverride(manualPinyin)
     setInputMessage(parsed.length ? '' : 'No Chinese characters found. Please try again.')
     if (parsed.length) history.record(parsed.join(''))
@@ -72,6 +76,12 @@ function App() {
   function selectCharacter(index: number) {
     stopPlayback()
     setCurrentIndex(index)
+  }
+
+  function toggleSpeechSelection(index: number) {
+    setSpeechSelection((selected) => selected.includes(index)
+      ? selected.filter((item) => item !== index)
+      : [...selected, index].sort((a, b) => a - b))
   }
 
   async function playCurrent() {
@@ -102,6 +112,7 @@ function App() {
 
   return (
     <main>
+      <SectionMenu />
       <header className="hero">
         <div className="brand-mark" aria-hidden="true">永</div>
         <div>
@@ -114,32 +125,7 @@ function App() {
       <CharacterInput value={input} onChange={setInput} onSubmit={parseInput} onImport={loadText} />
       {inputMessage && <p className="input-error" role="alert">{inputMessage}</p>}
 
-      <PronunciationPanel
-        text={chineseText}
-        pinyin={displayedPinyin}
-        autoPinyin={autoPinyin}
-        currentCharacter={currentCharacter}
-        currentCharacterPinyin={currentCharacterPinyin}
-        speechMessage={speech.message}
-        onPinyinChange={setPinyinOverride}
-        onUseAutomatic={() => setPinyinOverride(undefined)}
-        onSpeakCharacter={() => speech.speak(currentCharacter ?? '')}
-        onSpeakText={() => speech.speak(chineseText)}
-      />
-
-      <SavedWordSets
-        currentText={input}
-        currentPinyin={pinyinOverride}
-        sets={savedWordSets.sets}
-        storageError={savedWordSets.storageError}
-        onSave={savedWordSets.save}
-        onLoad={loadSavedSet}
-        onDelete={savedWordSets.remove}
-      />
-
-      <HistoryPanel items={history.items} onLoad={loadText} onClear={history.clear} />
-
-      <section className="practice-card" aria-labelledby="practice-heading">
+      <section id="practice" className="practice-card" aria-labelledby="practice-heading">
         <div className="practice-heading">
           <div>
             <p className="eyebrow">STEP 2</p>
@@ -209,6 +195,39 @@ function App() {
           </div>
         )}
       </section>
+
+      <PronunciationPanel
+        text={chineseText}
+        pinyin={displayedPinyin}
+        autoPinyin={autoPinyin}
+        currentCharacter={currentCharacter}
+        currentCharacterPinyin={currentCharacterPinyin}
+        characters={characters}
+        currentIndex={currentIndex}
+        selectedIndices={speechSelection}
+        speechSpeed={speechSpeed}
+        speechMessage={speech.message}
+        onPinyinChange={setPinyinOverride}
+        onUseAutomatic={() => setPinyinOverride(undefined)}
+        onCurrentIndexChange={selectCharacter}
+        onToggleSelectedIndex={toggleSpeechSelection}
+        onSpeechSpeedChange={setSpeechSpeed}
+        onSpeakCharacter={() => speech.speak(currentCharacter ?? '', speechSpeed)}
+        onSpeakSelection={() => speech.speak(speechSelection.map((index) => characters[index]).join(''), speechSpeed)}
+        onSpeakText={() => speech.speak(chineseText, speechSpeed)}
+      />
+
+      <SavedWordSets
+        currentText={input}
+        currentPinyin={pinyinOverride}
+        sets={savedWordSets.sets}
+        storageError={savedWordSets.storageError}
+        onSave={savedWordSets.save}
+        onLoad={loadSavedSet}
+        onDelete={savedWordSets.remove}
+      />
+
+      <HistoryPanel items={history.items} onLoad={loadText} onClear={history.clear} />
 
       <footer>Made for curious little writers.</footer>
     </main>

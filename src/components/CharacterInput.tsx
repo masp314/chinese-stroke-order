@@ -12,7 +12,7 @@ export function CharacterInput({ value, onChange, onSubmit, onImport }: Characte
   const [importText, setImportText] = useState('')
 
   return (
-    <section className="input-card" aria-labelledby="input-heading">
+    <section id="input" className="input-card" aria-labelledby="input-heading">
       <div>
         <p className="eyebrow">STEP 1</p>
         <h2 id="input-heading">What would you like to practise?</h2>
