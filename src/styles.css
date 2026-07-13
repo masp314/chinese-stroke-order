@@ -71,6 +71,8 @@ textarea:focus { border-color: #79baae; box-shadow: 0 0 0 4px rgba(121,186,174,.
 .file-import-toggle > span:last-child { color: #5b9d91; font-size: 1.6rem; }
 .file-import-content { padding: 2px 28px 24px; border-top: 1px solid #edf0ef; }
 .file-import-content > p:first-child { margin: 17px 0 14px; color: #718087; }
+.ocr-mode-control { display: grid; grid-template-columns: 130px minmax(200px, 1fr); align-items: center; gap: 7px 12px; margin-bottom: 13px; color: #56746f; font-size: .86rem; font-weight: 750; }
+.ocr-mode-control small { grid-column: 2; color: #89939e; font-weight: 500; }
 .file-picker {
   display: flex; align-items: center; justify-content: center; min-height: 54px; padding: 0 18px;
   border: 2px dashed #8fc8bd; border-radius: 15px; color: #477f75; background: #f2faf8; font-weight: 800; cursor: pointer;
@@ -189,6 +191,8 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
   .file-import-card { border-radius: 22px; }
   .file-import-toggle { min-height: 68px; padding: 13px 17px; border-radius: 22px; }
   .file-import-content { padding: 2px 17px 20px; }
+  .ocr-mode-control { grid-template-columns: 1fr; }
+  .ocr-mode-control small { grid-column: 1; }
   .input-row { flex-direction: column; }
   .parse-button { width: 100%; }
   .save-row, .saved-item { align-items: stretch; flex-direction: column; }

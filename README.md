@@ -52,4 +52,6 @@ Practice history is also stored locally, deduplicated, and limited to the latest
 
 Open **Advanced → Import from Image / PDF** to select PNG, JPG, JPEG, WebP, or PDF files. Image OCR runs in the browser with Tesseract.js using simplified Chinese (`chi_sim`). The OCR language data is downloaded on first use and then may be reused by the browser cache; images are not uploaded to an application backend.
 
+Image OCR offers **Auto detect**, **Word / short phrase** for roughly 1–10 characters on one line, and **Worksheet / full page** for document-style images.
+
 For PDFs, the app checks the first three pages for embedded text first. If no Chinese embedded text is found, those pages are rendered locally and sent through OCR. Extracted text remains editable until **Use this text & show characters** is selected. Long PDFs display a first-three-pages warning.

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { extractFromImage, extractFromPdf, hasChineseText } from '../utils/importText'
+import { extractFromImage, extractFromPdf, hasChineseText, type ImageOcrMode } from '../utils/importText'
 
 interface FileImportPanelProps {
   onUseText: (text: string) => void
@@ -15,6 +15,7 @@ export function FileImportPanel({ onUseText }: FileImportPanelProps) {
   const [warning, setWarning] = useState('')
   const [progress, setProgress] = useState<number | undefined>()
   const [busy, setBusy] = useState(false)
+  const [imageMode, setImageMode] = useState<ImageOcrMode>('auto')
   const inputRef = useRef<HTMLInputElement>(null)
 
   async function importFile(file: File) {
@@ -32,11 +33,13 @@ export function FileImportPanel({ onUseText }: FileImportPanelProps) {
 
       const result = isPdf
         ? await extractFromPdf(file, (message, value) => { setStatus(message); setProgress(value) })
-        : await extractFromImage(file, (message, value) => { setStatus(message); setProgress(value) })
+        : await extractFromImage(file, imageMode, (message, value) => { setStatus(message); setProgress(value) })
 
       setExtractedText(result.text)
       setProgress(1)
-      setStatus(result.usedOcr ? 'OCR complete. Please review and edit the text.' : 'PDF text extracted. Please review and edit it.')
+      setStatus(result.usedOcr
+        ? `${result.ocrMode === 'phrase' ? 'Short-phrase' : 'Document'} OCR complete. Please review and edit the text.`
+        : 'PDF text extracted. Please review and edit it.')
 
       const messages: string[] = []
       if (result.pageCount && result.pageCount > 3) messages.push(`This PDF has ${result.pageCount} pages. Only the first ${result.processedPages} were processed.`)
@@ -71,6 +74,15 @@ export function FileImportPanel({ onUseText }: FileImportPanelProps) {
       {expanded && (
         <div id="file-import-content" className="file-import-content">
           <p>Extract possible Chinese text on this device, then review it before adding it to your practice.</p>
+          <label className="ocr-mode-control">
+            <span>Image type</span>
+            <select value={imageMode} disabled={busy} onChange={(event) => setImageMode(event.target.value as ImageOcrMode)}>
+              <option value="auto">Auto detect</option>
+              <option value="phrase">Word / short phrase (1–10 characters)</option>
+              <option value="worksheet">Worksheet / full page</option>
+            </select>
+            <small>For one character or a short word such as 农、农夫、又长又卷, select “Word / short phrase”.</small>
+          </label>
           <label className={`file-picker ${busy ? 'disabled' : ''}`}>
             <span>{busy ? 'Extracting text…' : 'Choose image or PDF'}</span>
             <input
