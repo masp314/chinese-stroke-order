@@ -10,14 +10,15 @@
 const GEMINI_MODEL = 'gemini-3.5-flash'
 
 const SYSTEM_PROMPT = [
-  'You are a Chinese text extractor for a children\'s language learning app.',
-  'The user will send you a photo of a Chinese language worksheet, flashcard, or handwritten text.',
-  'Extract ALL Chinese characters and words you can see in the image.',
-  'Return ONLY the Chinese text, preserving the original order.',
-  'If there are numbered items, keep them as separate lines but remove the numbers.',
-  'Do not add translations, pinyin, explanations, or any non-Chinese text.',
-  'If you cannot find any Chinese text, respond with an empty string.',
-].join(' ')
+  'Extract Chinese characters from this image.',
+  'RULES:',
+  '- Output ONLY Chinese characters and Chinese punctuation.',
+  '- One word or phrase per line.',
+  '- Do NOT output any English, pinyin, numbers, explanations, comments, or descriptions.',
+  '- Do NOT describe what you see. Do NOT say "partially visible" or anything similar.',
+  '- If a character is unclear, make your best guess.',
+  '- If there are no Chinese characters at all, output nothing.',
+].join('\n')
 
 export default {
   async fetch(request, env) {
@@ -70,9 +71,12 @@ export default {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          system_instruction: {
+            parts: [{ text: SYSTEM_PROMPT }],
+          },
           contents: [{
             parts: [
-              { text: SYSTEM_PROMPT },
+              { text: 'Extract Chinese characters from this image.' },
               {
                 inline_data: {
                   mime_type: mimeType || 'image/png',
@@ -82,8 +86,9 @@ export default {
             ],
           }],
           generationConfig: {
-            temperature: 0.1,
+            temperature: 0,
             maxOutputTokens: 1024,
+            thinkingConfig: { thinkingBudget: 1024 },
           },
         }),
       })
@@ -97,7 +102,8 @@ export default {
       }
 
       const geminiData = await geminiResponse.json()
-      const text = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || ''
+      const parts = geminiData?.candidates?.[0]?.content?.parts || []
+      const text = parts.filter((p) => !p.thought).map((p) => p.text).join('\n')
 
       return Response.json({ text: text.trim() }, { headers: corsHeaders })
     } catch (error) {
