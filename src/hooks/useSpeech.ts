@@ -10,11 +10,22 @@ const SPEECH_RATES: Record<SpeechSpeed, number> = {
 const normalizeLanguage = (language: string) => language.toLowerCase().replaceAll('_', '-')
 const isMainlandMandarin = (voice: SpeechSynthesisVoice) => {
   const language = normalizeLanguage(voice.lang)
-  return language === 'zh-cn' || language === 'cmn-cn'
+  const isChinese = language === 'zh' || language.startsWith('zh-') || language === 'cmn' || language.startsWith('cmn-')
+  const isMainlandTag = language === 'zh-cn'
+    || language.startsWith('zh-cn-')
+    || language === 'cmn-cn'
+    || language.startsWith('cmn-cn-')
+    || language.includes('-hans-cn')
+    || language.includes('-cn-hans')
+  return isChinese && isMainlandTag
 }
 const isHongKongChinese = (voice: SpeechSynthesisVoice) => {
   const language = normalizeLanguage(voice.lang)
-  return language === 'zh-hk' || language === 'yue-hk'
+  return language === 'zh-hk'
+    || language.startsWith('zh-hk-')
+    || language === 'yue-hk'
+    || language.startsWith('yue-hk-')
+    || language.includes('-hant-hk')
 }
 const isGoogleVoice = (voice: SpeechSynthesisVoice) =>
   `${voice.name} ${voice.voiceURI}`.toLowerCase().includes('google')
@@ -60,15 +71,13 @@ export function useSpeech() {
       ?? eligibleVoices.find((voice) => isMainlandMandarin(voice) && isGoogleVoice(voice))
       ?? eligibleVoices.find(isMainlandMandarin)
 
-    if (!chineseVoice) {
-      setMessage('No Mainland Mandarin voice (zh-CN) is selected. Choose a voice below or add Chinese (China) speech in the device settings.')
-      return
-    }
-
     window.speechSynthesis.cancel()
     const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = chineseVoice.lang
-    utterance.voice = chineseVoice
+    // Android Chrome may return no voices even though its system TTS can speak
+    // Mandarin. In that case, specifying zh-CN lets the browser select the
+    // device's Mainland Mandarin voice without exposing Taiwan as an option.
+    utterance.lang = chineseVoice?.lang ?? 'zh-CN'
+    utterance.voice = chineseVoice ?? null
     utterance.rate = SPEECH_RATES[speed]
     utterance.onstart = () => setMessage('Speaking…')
     utterance.onend = () => setMessage('')
