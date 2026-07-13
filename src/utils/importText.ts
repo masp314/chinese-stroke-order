@@ -92,6 +92,36 @@ function getOtsuThreshold(histogram: number[], pixelCount: number) {
   return Math.min(185, Math.max(80, threshold))
 }
 
+function findMainTextBand(rowInk: number[], width: number, height: number) {
+  const minimumInk = Math.max(4, Math.round(width * .003))
+  const maximumGap = Math.max(8, Math.round(height * .012))
+  const minimumBandHeight = Math.max(24, Math.round(height * .045))
+  const bands: Array<{ top: number; bottom: number; ink: number }> = []
+  let current: { top: number; bottom: number; ink: number } | undefined
+  let lastActiveRow = -Infinity
+
+  for (let y = 0; y < height; y += 1) {
+    if (rowInk[y] < minimumInk) continue
+    if (!current || y - lastActiveRow > maximumGap) {
+      if (current) bands.push(current)
+      current = { top: y, bottom: y, ink: rowInk[y] }
+    } else {
+      current.bottom = y
+      current.ink += rowInk[y]
+    }
+    lastActiveRow = y
+  }
+  if (current) bands.push(current)
+
+  const substantialBands = bands.filter((band) => band.bottom - band.top + 1 >= minimumBandHeight)
+  const candidates = substantialBands.length ? substantialBands : bands
+  return candidates.sort((left, right) => {
+    const leftScore = (left.bottom - left.top + 1) * Math.log1p(left.ink)
+    const rightScore = (right.bottom - right.top + 1) * Math.log1p(right.ink)
+    return rightScore - leftScore
+  })[0]
+}
+
 async function prepareShortPhraseImage(file: File) {
   const bitmap = await createImageBitmap(file)
   const maxSide = 1800
@@ -113,10 +143,7 @@ async function prepareShortPhraseImage(file: File) {
     histogram[grey] += 1
   }
   const threshold = getOtsuThreshold(histogram, sourceCanvas.width * sourceCanvas.height)
-  let left = sourceCanvas.width
-  let top = sourceCanvas.height
-  let right = 0
-  let bottom = 0
+  const rowInk = Array.from({ length: sourceCanvas.height }, () => 0)
   for (let y = 0; y < sourceCanvas.height; y += 1) {
     for (let x = 0; x < sourceCanvas.width; x += 1) {
       const index = (y * sourceCanvas.width + x) * 4
@@ -127,18 +154,32 @@ async function prepareShortPhraseImage(file: File) {
       image.data[index + 1] = value
       image.data[index + 2] = value
       image.data[index + 3] = 255
-      if (ink) {
-        left = Math.min(left, x); right = Math.max(right, x)
-        top = Math.min(top, y); bottom = Math.max(bottom, y)
-      }
+      if (ink) rowInk[y] += 1
     }
   }
   sourceContext.putImageData(image, 0, 0)
 
+  const band = findMainTextBand(rowInk, sourceCanvas.width, sourceCanvas.height)
+  if (!band) return sourceCanvas
+  const verticalPadding = Math.round((band.bottom - band.top + 1) * .1)
+  const top = Math.max(0, band.top - verticalPadding)
+  const bottom = Math.min(sourceCanvas.height - 1, band.bottom + verticalPadding)
+  const columnInk = Array.from({ length: sourceCanvas.width }, () => 0)
+  for (let y = top; y <= bottom; y += 1) {
+    for (let x = 0; x < sourceCanvas.width; x += 1) {
+      if (image.data[(y * sourceCanvas.width + x) * 4] === 0) columnInk[x] += 1
+    }
+  }
+  const minimumColumnInk = Math.max(2, Math.round((bottom - top + 1) * .006))
+  const left = columnInk.findIndex((ink) => ink >= minimumColumnInk)
+  let right = -1
+  for (let x = columnInk.length - 1; x >= 0; x -= 1) {
+    if (columnInk[x] >= minimumColumnInk) { right = x; break }
+  }
   if (right <= left || bottom <= top) return sourceCanvas
   const inkWidth = right - left + 1
   const inkHeight = bottom - top + 1
-  const padding = Math.round(Math.max(inkWidth, inkHeight) * .16)
+  const padding = Math.round(Math.max(inkWidth, inkHeight) * .08)
   const cropLeft = Math.max(0, left - padding)
   const cropTop = Math.max(0, top - padding)
   const cropRight = Math.min(sourceCanvas.width, right + padding)
@@ -146,17 +187,17 @@ async function prepareShortPhraseImage(file: File) {
   const cropWidth = cropRight - cropLeft
   const cropHeight = cropBottom - cropTop
   const target = document.createElement('canvas')
-  target.width = 1024
-  target.height = 1024
+  target.width = 1600
+  target.height = 700
   const targetContext = target.getContext('2d', { alpha: false })
   if (!targetContext) throw new Error('Canvas is not available in this browser.')
   targetContext.fillStyle = 'white'
   targetContext.fillRect(0, 0, target.width, target.height)
-  const targetScale = Math.min(820 / cropWidth, 820 / cropHeight)
+  const targetScale = Math.min(1400 / cropWidth, 520 / cropHeight)
   const width = cropWidth * targetScale
   const height = cropHeight * targetScale
   targetContext.imageSmoothingEnabled = false
-  targetContext.drawImage(sourceCanvas, cropLeft, cropTop, cropWidth, cropHeight, (1024 - width) / 2, (1024 - height) / 2, width, height)
+  targetContext.drawImage(sourceCanvas, cropLeft, cropTop, cropWidth, cropHeight, (target.width - width) / 2, (target.height - height) / 2, width, height)
   return target
 }
 
