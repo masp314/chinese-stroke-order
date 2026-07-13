@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { lookupWord, type WordDefinition } from '../utils/dictionary'
 
 interface WordDefinitionPanelProps {
-  character: string | undefined
+  word: string
   aiProxyUrl: string
 }
 
@@ -35,13 +35,13 @@ async function fetchJaTranslation(word: string, definitions: string[], proxyUrl:
   }
 }
 
-export function WordDefinitionPanel({ character, aiProxyUrl }: WordDefinitionPanelProps) {
+export function WordDefinitionPanel({ word, aiProxyUrl }: WordDefinitionPanelProps) {
   const [defs, setDefs] = useState<WordDefinition[]>([])
   const [ja, setJa] = useState<JaTranslation | null>(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (!character) {
+    if (!word) {
       setDefs([])
       setJa(null)
       return
@@ -51,25 +51,25 @@ export function WordDefinitionPanel({ character, aiProxyUrl }: WordDefinitionPan
     setLoading(true)
     setJa(null)
 
-    lookupWord(character).then((results) => {
+    lookupWord(word).then((results) => {
       if (cancelled) return
       setDefs(results)
       setLoading(false)
 
       if (results.length > 0 && aiProxyUrl) {
         const allDefs = results.flatMap((r) => r.definitions)
-        fetchJaTranslation(character, allDefs, aiProxyUrl).then((translation) => {
+        fetchJaTranslation(word, allDefs, aiProxyUrl).then((translation) => {
           if (!cancelled) setJa(translation)
         })
       }
     })
 
     return () => { cancelled = true }
-  }, [character, aiProxyUrl])
+  }, [word, aiProxyUrl])
 
-  if (!character) return null
+  if (!word) return null
   if (loading) return <div className="word-def-panel"><p className="word-def-loading">Loading dictionary...</p></div>
-  if (defs.length === 0) return <div className="word-def-panel"><p className="word-def-empty">No dictionary entry for 「{character}」</p></div>
+  if (defs.length === 0) return <div className="word-def-panel"><p className="word-def-empty">No dictionary entry for "{word}"</p></div>
 
   return (
     <div className="word-def-panel">

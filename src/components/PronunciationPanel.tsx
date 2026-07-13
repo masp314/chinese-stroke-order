@@ -2,6 +2,7 @@ import type { SpeechSpeed } from '../types'
 import { getPinyin } from '../utils/pinyin'
 import { WordDefinitionPanel } from './WordDefinitionPanel'
 
+
 interface PronunciationPanelProps {
   text: string
   pinyin: string
@@ -116,7 +117,6 @@ export function PronunciationPanel(props: PronunciationPanelProps) {
             </label>
             <button type="button" onClick={props.onSpeakCharacter} disabled={!props.currentCharacter}>🔊 Speak this character</button>
           </div>
-          <WordDefinitionPanel character={props.currentCharacter} aiProxyUrl={props.aiProxyUrl} />
         </section>
 
         <section className="listen-action selected-listen" aria-labelledby="selected-listen-heading">
@@ -138,6 +138,7 @@ export function PronunciationPanel(props: PronunciationPanelProps) {
             </div>
             <button className="selected-speak-button" type="button" onClick={props.onSpeakSelection} disabled={!props.selectedIndices.length}>🔊 Speak selected</button>
           </div>
+          <WordDefinitionPanel word={props.selectedIndices.map((i) => props.characters[i]).join('')} aiProxyUrl={props.aiProxyUrl} />
         </section>
 
       </div>
