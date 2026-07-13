@@ -1,10 +1,10 @@
-const CACHE_NAME = 'stroke-order-shell-v13'
+const CACHE_NAME = 'stroke-order-shell-v14'
 const SCOPE_URL = new URL('./', self.registration.scope)
 const APP_SHELL = [
   SCOPE_URL.href,
   new URL('manifest.webmanifest', SCOPE_URL).href,
-  new URL('icons/icon-192.png', SCOPE_URL).href,
-  new URL('icons/icon-512.png', SCOPE_URL).href,
+  new URL('icons/icon-192-sheng.png', SCOPE_URL).href,
+  new URL('icons/icon-512-sheng.png', SCOPE_URL).href,
 ]
 
 self.addEventListener('install', (event) => {

@@ -16,7 +16,7 @@ import type { PlaybackState, PracticeMode, SavedWordSet, SpeechSpeed, Speed } fr
 import { extractChineseCharacters } from './utils/characters'
 import { getPinyin } from './utils/pinyin'
 
-const EXAMPLE = '农场住着一群绵羊'
+const EXAMPLE = '你好，我喜欢学中文'
 
 function App() {
   const [input, setInput] = useState(EXAMPLE)
@@ -115,7 +115,7 @@ function App() {
     <main>
       <SectionMenu />
       <header className="hero">
-        <div className="brand-mark" aria-hidden="true">永</div>
+        <div className="brand-mark" aria-hidden="true">升</div>
         <div>
           <p className="eyebrow">STROKE BY STROKE</p>
           <h1>Hanzi Steps</h1>

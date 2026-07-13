@@ -26,7 +26,7 @@ export function CharacterInput({ value, onChange, onSubmit, onImport }: Characte
           }}
           rows={2}
           maxLength={80}
-          placeholder="Type Chinese here… 例如：农场住着一群绵羊"
+          placeholder="Type Chinese here… 例如：你好，我喜欢学中文"
           aria-label="Chinese text"
         />
         <button className="primary parse-button" type="button" onClick={onSubmit}>
