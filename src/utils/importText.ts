@@ -43,6 +43,12 @@ export function cleanExtractedText(text: string) {
     .trim()
 }
 
+function cleanShortPhraseText(text: string) {
+  return cleanExtractedText(text)
+    .replace(/^\s*(?:(?:\d+|[Il|]|[一人])\s*[.．、:：)）]\s*)+/u, '')
+    .trim()
+}
+
 async function createChineseWorker(onProgress: ExtractionProgress) {
   const { createWorker } = await import('tesseract.js')
   return createWorker('chi_sim', 1, {
@@ -216,7 +222,7 @@ export async function extractFromImage(file: File, mode: ImageOcrMode, onProgres
       const prepared = await prepareShortPhraseImage(file)
       await worker.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_LINE, user_defined_dpi: '300' })
       const result = await worker.recognize(prepared)
-      return { text: cleanExtractedText(result.data.text), usedOcr: true, ocrMode: 'phrase', previewUrl: prepared.toDataURL('image/png') }
+      return { text: cleanShortPhraseText(result.data.text), usedOcr: true, ocrMode: 'phrase', previewUrl: prepared.toDataURL('image/png') }
     }
 
     await worker.setParameters({ tessedit_pageseg_mode: PSM.AUTO })
@@ -235,7 +241,7 @@ export async function extractFromImage(file: File, mode: ImageOcrMode, onProgres
     const prepared = await prepareShortPhraseImage(file)
     await worker.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_LINE, user_defined_dpi: '300' })
     const phraseResult = await worker.recognize(prepared)
-    const phraseText = cleanExtractedText(phraseResult.data.text)
+    const phraseText = cleanShortPhraseText(phraseResult.data.text)
     const phraseChineseCount = countChinese(phraseText)
     const preferPhrase = phraseChineseCount >= 1 && phraseChineseCount <= 10
       && (documentChineseCount === 0

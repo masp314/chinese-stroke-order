@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stroke-order-shell-v12'
+const CACHE_NAME = 'stroke-order-shell-v13'
 const SCOPE_URL = new URL('./', self.registration.scope)
 const APP_SHELL = [
   SCOPE_URL.href,
