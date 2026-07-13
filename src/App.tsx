@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
+import { AiSettings } from './components/AiSettings'
 import { CharacterInput } from './components/CharacterInput'
 import { CharacterList } from './components/CharacterList'
 import { Controls } from './components/Controls'
@@ -9,6 +10,7 @@ import { PronunciationPanel } from './components/PronunciationPanel'
 import { SavedWordSets } from './components/SavedWordSets'
 import { SectionMenu } from './components/SectionMenu'
 import { StrokeAnimator, type StrokeAnimatorHandle } from './components/StrokeAnimator'
+import { useAiSettings } from './hooks/useAiSettings'
 import { useHistory } from './hooks/useHistory'
 import { useSavedWordSets } from './hooks/useSavedWordSets'
 import { useSpeech } from './hooks/useSpeech'
@@ -32,9 +34,11 @@ function App() {
   const [speechSelection, setSpeechSelection] = useState<number[]>([0])
   const animatorRef = useRef<StrokeAnimatorHandle>(null)
   const runIdRef = useRef(0)
+  const [aiSettingsOpen, setAiSettingsOpen] = useState(false)
   const savedWordSets = useSavedWordSets()
   const history = useHistory()
   const speech = useSpeech()
+  const aiSettings = useAiSettings()
 
   const chineseText = characters.join('')
   const autoPinyin = useMemo(() => getPinyin(chineseText), [chineseText])
@@ -126,10 +130,21 @@ function App() {
       <CharacterInput value={input} onChange={setInput} onSubmit={parseInput} onImport={loadText} />
       {inputMessage && <p className="input-error" role="alert">{inputMessage}</p>}
 
-      <FileImportPanel onUseText={(text) => {
-        loadText(text)
-        window.requestAnimationFrame(() => document.querySelector('#input')?.scrollIntoView({ behavior: 'smooth' }))
-      }} />
+      <FileImportPanel
+        aiProxyUrl={aiSettings.proxyUrl}
+        onOpenAiSettings={() => setAiSettingsOpen(true)}
+        onUseText={(text) => {
+          loadText(text)
+          window.requestAnimationFrame(() => document.querySelector('#input')?.scrollIntoView({ behavior: 'smooth' }))
+        }}
+      />
+
+      <AiSettings
+        open={aiSettingsOpen}
+        proxyUrl={aiSettings.proxyUrl}
+        onClose={() => setAiSettingsOpen(false)}
+        onSave={aiSettings.setProxyUrl}
+      />
 
       <section id="practice" className="practice-card" aria-labelledby="practice-heading">
         <div className="practice-heading">
