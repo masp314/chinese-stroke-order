@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stroke-order-shell-v14'
+const CACHE_NAME = 'stroke-order-shell-v15'
 const SCOPE_URL = new URL('./', self.registration.scope)
 const APP_SHELL = [
   SCOPE_URL.href,
@@ -23,26 +23,18 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return
 
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).then((response) => {
-        if (response.ok) {
-          const copy = response.clone()
-          void caches.open(CACHE_NAME).then((cache) => cache.put(SCOPE_URL.href, copy))
-        }
-        return response
-      }).catch(() => caches.match(SCOPE_URL.href)),
-    )
-    return
-  }
-
+  // Network-first for everything: use fresh content when online, cache as fallback for offline
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
+    fetch(event.request).then((response) => {
       if (response.ok) {
         const copy = response.clone()
-        void caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy))
+        const cacheKey = event.request.mode === 'navigate' ? SCOPE_URL.href : event.request
+        void caches.open(CACHE_NAME).then((cache) => cache.put(cacheKey, copy))
       }
       return response
-    }).catch(() => { throw new Error('Resource unavailable offline') })),
+    }).catch(() => {
+      const cacheKey = event.request.mode === 'navigate' ? SCOPE_URL.href : event.request
+      return caches.match(cacheKey)
+    }),
   )
 })
