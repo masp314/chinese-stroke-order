@@ -43,7 +43,7 @@ main { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 38px 0 26
 .eyebrow { margin: 0 0 4px; color: #df725f; font-size: .76rem; font-weight: 800; letter-spacing: .16em; }
 h2 { margin: 0; color: #334155; font-size: clamp(1.2rem, 3vw, 1.55rem); }
 
-.input-card, .practice-card, .library-card, .history-card, .pronunciation-card, .file-import-card, .vocabulary-card {
+.input-card, .practice-card, .library-card, .history-card, .pronunciation-card, .file-import-card, .vocabulary-card, .word-discovery {
   border: 1px solid rgba(126, 142, 157, .16); border-radius: 28px; background: rgba(255,255,255,.88);
   box-shadow: 0 14px 44px rgba(93, 78, 62, .08);
 }
@@ -64,6 +64,17 @@ textarea:focus { border-color: #79baae; box-shadow: 0 0 0 4px rgba(121,186,174,.
 .import-panel { display: grid; gap: 10px; margin-top: 10px; padding: 17px; border-radius: 17px; background: #f3faf8; }
 .import-panel label { color: #56746f; font-weight: 750; }
 .import-panel button { justify-self: end; }
+
+.word-discovery { margin-top: 14px; padding: 24px 28px 20px; }
+.word-discovery-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.discovery-hint { margin: 4px 0 0; color: #718096; font-size: .9rem; }
+.discovery-controls { display: flex; align-items: center; gap: 10px; }
+.discovery-level { display: flex; align-items: center; gap: 6px; color: #56746f; font-weight: 700; font-size: .9rem; }
+.discovery-level select { padding: 6px 10px; border: 2px solid #e5e9e9; border-radius: 10px; background: #fffefa; font-weight: 700; }
+.suggested-words { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.suggested-words button { padding: 10px 16px; border: 2px solid rgba(126,142,157,.16); border-radius: 14px; background: rgba(255,255,255,.9); color: #334155; font-size: 1.05rem; font-weight: 600; transition: background .15s, border-color .15s; }
+.suggested-words button:hover { border-color: #79baae; background: #f0faf7; color: #2a6e5f; }
+.discovery-note { display: block; margin-top: 14px; color: #a09b91; font-size: .8rem; }
 
 .file-import-card { margin-top: 14px; overflow: hidden; }
 .file-import-toggle {
@@ -230,7 +241,9 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
   .hero p:last-child { font-size: .92rem; }
   .main-nav { gap: 4px; margin-bottom: 20px; }
   .nav-tab { padding: 10px 6px; font-size: .88rem; }
-  .input-card, .practice-card, .library-card, .history-card, .pronunciation-card, .vocabulary-card { padding: 20px 17px; border-radius: 22px; }
+  .input-card, .practice-card, .library-card, .history-card, .pronunciation-card, .vocabulary-card, .word-discovery { padding: 20px 17px; border-radius: 22px; }
+  .word-discovery-heading { flex-direction: column; }
+  .discovery-controls { width: 100%; }
   .file-import-card { border-radius: 22px; }
   .file-import-toggle { min-height: 68px; padding: 13px 17px; border-radius: 22px; }
   .file-import-content { padding: 2px 17px 20px; }

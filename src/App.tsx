@@ -11,6 +11,7 @@ import { SavedWordSets } from './components/SavedWordSets'
 import { VocabularyPanel } from './components/VocabularyPanel'
 import { WorksheetPanel } from './components/WorksheetPanel'
 import { SectionMenu } from './components/SectionMenu'
+import { WordDiscovery } from './components/WordDiscovery'
 import { StrokeAnimator, type StrokeAnimatorHandle } from './components/StrokeAnimator'
 import { useAiSettings } from './hooks/useAiSettings'
 import { useHistory } from './hooks/useHistory'
@@ -148,6 +149,11 @@ function App() {
               setActiveTab('learn')
             }}
           />
+
+          <WordDiscovery onAdd={(word) => {
+            const trimmed = input.trim()
+            setInput(trimmed ? `${trimmed}\n${word}` : word)
+          }} />
 
           <AiSettings
             open={aiSettingsOpen}
