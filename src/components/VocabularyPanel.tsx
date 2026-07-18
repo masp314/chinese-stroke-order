@@ -5,11 +5,12 @@ interface VocabularyPanelProps {
   entries: VocabEntry[]
   onDelete: (id: string) => void
   onSpeak: (text: string) => void
+  onPractise?: (text: string) => void
 }
 
 const COLLAPSED_COUNT = 5
 
-export function VocabularyPanel({ entries, onDelete, onSpeak }: VocabularyPanelProps) {
+export function VocabularyPanel({ entries, onDelete, onSpeak, onPractise }: VocabularyPanelProps) {
   const [expanded, setExpanded] = useState(false)
 
   if (entries.length === 0) return null
@@ -41,7 +42,8 @@ export function VocabularyPanel({ entries, onDelete, onSpeak }: VocabularyPanelP
             </div>
             <div className="vocab-item-actions">
               <button type="button" onClick={() => onSpeak(entry.word)} title="Speak">🔊</button>
-              <button type="button" onClick={() => onDelete(entry.id)} title="Delete">✕</button>
+              {onPractise && <button type="button" onClick={() => onPractise(entry.word)} title="Practise">✎</button>}
+              <button type="button" onClick={() => { if (window.confirm(`Delete "${entry.word}"?`)) onDelete(entry.id) }} title="Delete">✕</button>
             </div>
           </div>
         ))}

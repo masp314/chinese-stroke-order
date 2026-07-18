@@ -79,7 +79,7 @@ export function SavedWordSets({ currentText, currentPinyin, sets, storageError, 
               </div>
               <div className="saved-actions">
                 <button type="button" onClick={() => onLoad(set)}>Load</button>
-                <button className="danger-button" type="button" onClick={() => onDelete(set.id)} aria-label={`Delete ${set.title}`}>Delete</button>
+                <button className="danger-button" type="button" onClick={() => { if (window.confirm(`Delete "${set.title}"?`)) onDelete(set.id) }} aria-label={`Delete ${set.title}`}>Delete</button>
               </div>
             </article>
           ))}

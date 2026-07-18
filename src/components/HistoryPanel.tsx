@@ -14,7 +14,7 @@ export function HistoryPanel({ items, onLoad, onClear }: HistoryPanelProps) {
           <p className="eyebrow">RECENT PRACTICE</p>
           <h2 id="history-heading">History</h2>
         </div>
-        {items.length > 0 && <button className="text-button danger-button" type="button" onClick={onClear}>Clear history</button>}
+        {items.length > 0 && <button className="text-button danger-button" type="button" onClick={() => { if (window.confirm('Clear all history?')) onClear() }}>Clear history</button>}
       </div>
       {items.length ? (
         <div className="history-list">

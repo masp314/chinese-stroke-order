@@ -59,7 +59,7 @@ function App() {
     animatorRef.current?.reset()
   }
 
-  function parseText(text: string, manualPinyin?: string) {
+  function parseText(text: string, manualPinyin?: string): boolean {
     stopPlayback()
     const parsed = extractChineseCharacters(text)
     setCharacters(parsed)
@@ -68,10 +68,11 @@ function App() {
     setPinyinOverride(manualPinyin)
     setInputMessage(parsed.length ? '' : 'No Chinese characters found. Please try again.')
     if (parsed.length) history.record(parsed.join(''))
+    return parsed.length > 0
   }
 
-  function parseInput() {
-    parseText(input)
+  function parseInput(): boolean {
+    return parseText(input)
   }
 
   function loadText(text: string, manualPinyin?: string) {
@@ -137,7 +138,7 @@ function App() {
 
       {activeTab === 'create' && (
         <>
-          <CharacterInput value={input} onChange={setInput} onSubmit={() => { parseInput(); setActiveTab('learn') }} onImport={(text) => { loadText(text); setActiveTab('learn') }} />
+          <CharacterInput value={input} onChange={setInput} onSubmit={() => { if (parseInput()) setActiveTab('learn') }} onImport={(text) => { loadText(text); setActiveTab('learn') }} />
           {inputMessage && <p className="input-error" role="alert">{inputMessage}</p>}
 
           <FileImportPanel
@@ -167,6 +168,14 @@ function App() {
 
       {activeTab === 'learn' && (
         <>
+          {characters.length > 0 && (
+            <div className="current-text-bar">
+              <span className="current-text-label">Practising:</span>
+              <span className="current-text-value">{chineseText}</span>
+              <button type="button" className="link-button" onClick={() => setActiveTab('create')}>Edit</button>
+            </div>
+          )}
+
           <section id="practice" className="practice-card" aria-labelledby="practice-heading">
             <div className="practice-heading">
               <div>
@@ -275,6 +284,7 @@ function App() {
             entries={vocabulary.entries}
             onDelete={vocabulary.remove}
             onSpeak={(text) => speech.speak(text, speechSpeed)}
+            onPractise={(text) => { loadText(text); setActiveTab('learn') }}
           />
 
           <SavedWordSets

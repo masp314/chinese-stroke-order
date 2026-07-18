@@ -74,7 +74,12 @@ textarea:focus { border-color: #79baae; box-shadow: 0 0 0 4px rgba(121,186,174,.
 .suggested-words { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .suggested-words button { padding: 10px 16px; border: 2px solid rgba(126,142,157,.16); border-radius: 14px; background: rgba(255,255,255,.9); color: #334155; font-size: 1.05rem; font-weight: 600; transition: background .15s, border-color .15s; }
 .suggested-words button:hover { border-color: #79baae; background: #f0faf7; color: #2a6e5f; }
+.discovery-added { margin: 10px 0 0; padding: 6px 12px; border-radius: 8px; background: #e8f5f1; color: #2a6e5f; font-size: .88rem; font-weight: 600; }
 .discovery-note { display: block; margin-top: 14px; color: #a09b91; font-size: .8rem; }
+
+.current-text-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; padding: 10px 16px; border-radius: 14px; background: rgba(255,255,255,.8); border: 1px solid rgba(126,142,157,.12); font-size: .92rem; }
+.current-text-label { color: #718096; font-weight: 700; white-space: nowrap; }
+.current-text-value { flex: 1; color: #334155; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .file-import-card { margin-top: 14px; overflow: hidden; }
 .file-import-toggle {

@@ -6,8 +6,10 @@ export interface WorksheetItem {
   type: 'word' | 'phrase' | 'sentence'
 }
 
+import type { WordLevel } from '../data/levelWords'
+
 export interface WorksheetOptions {
-  level: 'K2' | 'P1'
+  level: WordLevel
   includeIllustrations: boolean
   includeMiniTest: boolean
 }

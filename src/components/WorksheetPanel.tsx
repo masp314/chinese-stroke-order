@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { WORD_LEVELS, type WordLevel } from '../data/levelWords'
 import type { WorksheetItem, WorksheetOptions } from '../types/worksheet'
 import { createWorksheetItems, splitInputToWordList } from '../utils/worksheetItems'
 import { generateWorksheetPdf, type PdfResult } from '../utils/worksheetPdf'
@@ -145,10 +146,9 @@ export function WorksheetPanel({ currentInput, characters }: WorksheetPanelProps
               <span>Level</span>
               <select
                 value={options.level}
-                onChange={(e) => setOptions({ ...options, level: e.target.value as 'K2' | 'P1' })}
+                onChange={(e) => setOptions({ ...options, level: e.target.value as WordLevel })}
               >
-                <option value="K2">K2</option>
-                <option value="P1">P1</option>
+                {WORD_LEVELS.map((lvl) => <option value={lvl} key={lvl}>{lvl}</option>)}
               </select>
             </label>
             <label className="worksheet-option">

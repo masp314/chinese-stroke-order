@@ -11,7 +11,7 @@ function classifyText(text: string): WorksheetItem['type'] {
 }
 
 function generateId(): string {
-  return Math.random().toString(36).slice(2, 10)
+  return crypto.randomUUID()
 }
 
 export async function createWorksheetItems(

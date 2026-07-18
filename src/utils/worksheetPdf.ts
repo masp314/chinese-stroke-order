@@ -9,6 +9,14 @@ const CJK_FONT = "'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft 
 
 const BOX_SIZE = 20
 const BOX_GAP = 2
+
+const measureCanvas = document.createElement('canvas')
+const measureCtx = measureCanvas.getContext('2d')!
+
+function measurePinyinWidthMm(text: string, fontSizePx: number): number {
+  measureCtx.font = `${fontSizePx * 2}px ${CJK_FONT}`
+  return Math.min(measureCtx.measureText(text).width / 2 * 0.75, USABLE_W)
+}
 const GUIDE_COLOR = '#d0d0d0'
 const TRACE_COLOR = '#d8d8d8'
 const BOX_BORDER_COLOR = '#999999'
@@ -118,11 +126,7 @@ function addCoverPage(
     y += 18
 
     const pinyinImg = renderPinyinToImage(item.pinyin, 11)
-    const pinyinCanvas = document.createElement('canvas')
-    const pCtx = pinyinCanvas.getContext('2d')!
-    pCtx.font = `22px ${CJK_FONT}`
-    const pMeasured = pCtx.measureText(item.pinyin)
-    const pinyinW = Math.min(pMeasured.width / 2 * 0.75, USABLE_W)
+    const pinyinW = measurePinyinWidthMm(item.pinyin, 11)
     doc.addImage(pinyinImg, 'PNG', (PAGE_W - pinyinW) / 2, y - 4, pinyinW, 11 * 0.75)
     y += 10
 
@@ -161,11 +165,7 @@ function addPracticePages(
   doc.addImage(headerImg, 'PNG', MARGIN, y - 6, headerW, 32 * 0.75)
 
   const pinyinImg = renderPinyinToImage(item.pinyin, 11)
-  const pCanvas = document.createElement('canvas')
-  const pCtx = pCanvas.getContext('2d')!
-  pCtx.font = `22px ${CJK_FONT}`
-  const pM = pCtx.measureText(item.pinyin)
-  const pW = Math.min(pM.width / 2 * 0.75, USABLE_W)
+  const pW = measurePinyinWidthMm(item.pinyin, 11)
   doc.addImage(pinyinImg, 'PNG', MARGIN + headerW + 4, y - 2, pW, 11 * 0.75)
   y += 24
 
@@ -246,11 +246,7 @@ function addPracticePages(
     doc.addImage(readImg, 'PNG', MARGIN, currentY - 3, readW, 16 * 0.75)
 
     const rpImg = renderPinyinToImage(item.pinyin, 9)
-    const rpCanvas = document.createElement('canvas')
-    const rpCtx = rpCanvas.getContext('2d')!
-    rpCtx.font = `18px ${CJK_FONT}`
-    const rpM = rpCtx.measureText(item.pinyin)
-    const rpW = Math.min(rpM.width / 2 * 0.75, 80)
+    const rpW = Math.min(measurePinyinWidthMm(item.pinyin, 9), 80)
     doc.addImage(rpImg, 'PNG', MARGIN + readW + 4, currentY - 1, rpW, 9 * 0.75)
 
     currentY += 14
@@ -295,7 +291,7 @@ function addExtraPracticePage(
   const availableHeight = PAGE_H - MARGIN - y - 10
   const totalRows = Math.floor(availableHeight / rowHeight)
   const maxReps = totalRows * wordsPerRow
-  const reps = Math.max(remaining, maxReps)
+  const reps = Math.min(remaining, maxReps)
 
   let repCount = 0
   let currentY = y
@@ -335,7 +331,11 @@ function addMiniTestPage(
   doc.text('1. Match the pinyin and the Chinese', MARGIN, y + 3)
   y += 10
 
-  const shuffledItems = [...items].sort(() => Math.random() - 0.5)
+  const shuffledItems = [...items]
+  for (let i = shuffledItems.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffledItems[i], shuffledItems[j]] = [shuffledItems[j], shuffledItems[i]]
+  }
   const colW = USABLE_W / 2
 
   for (let i = 0; i < Math.min(items.length, 8); i++) {
@@ -346,11 +346,7 @@ function addMiniTestPage(
     doc.setTextColor('#334155')
     doc.text(`${i + 1}.`, MARGIN + 4, y + 4)
     const pinyinMatchImg = renderPinyinToImage(item.pinyin, 10)
-    const pmCanvas = document.createElement('canvas')
-    const pmCtx = pmCanvas.getContext('2d')!
-    pmCtx.font = `20px ${CJK_FONT}`
-    const pmM = pmCtx.measureText(item.pinyin)
-    const pmW = Math.min(pmM.width / 2 * 0.75, colW - 20)
+    const pmW = Math.min(measurePinyinWidthMm(item.pinyin, 10), colW - 20)
     doc.addImage(pinyinMatchImg, 'PNG', MARGIN + 14, y, pmW, 10 * 0.75)
 
     const matchImg = renderChineseToImage(shuffled.text, 12, '#334155')
