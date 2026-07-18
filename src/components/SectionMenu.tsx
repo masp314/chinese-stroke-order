@@ -1,36 +1,31 @@
-import { useState } from 'react'
+type Tab = 'create' | 'learn' | 'library'
 
-const LINKS = [
-  { href: '#input', label: 'Enter text' },
-  { href: '#file-import', label: 'Import image / PDF' },
-  { href: '#practice', label: 'Watch & quiz' },
-  { href: '#pronunciation', label: 'Listen & say' },
-  { href: '#vocabulary', label: 'My vocabulary' },
-  { href: '#saved-sets', label: 'My word sets' },
-  { href: '#history', label: 'Recent practice' },
-]
+interface SectionMenuProps {
+  activeTab: Tab
+  onTabChange: (tab: Tab) => void
+}
 
-export function SectionMenu() {
-  const [open, setOpen] = useState(false)
-
+export function SectionMenu({ activeTab, onTabChange }: SectionMenuProps) {
   return (
-    <div className="section-menu">
+    <nav className="main-nav" aria-label="Main navigation">
       <button
-        className="menu-button"
         type="button"
-        aria-label={open ? 'Close section menu' : 'Open section menu'}
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-      >
-        <span aria-hidden="true">☰</span>
-      </button>
-      {open && (
-        <nav className="menu-popover" aria-label="Page sections">
-          {LINKS.map((link) => (
-            <a href={link.href} onClick={() => setOpen(false)} key={link.href}>{link.label}</a>
-          ))}
-        </nav>
-      )}
-    </div>
+        className={activeTab === 'create' ? 'nav-tab active' : 'nav-tab'}
+        aria-current={activeTab === 'create' ? 'page' : undefined}
+        onClick={() => onTabChange('create')}
+      >Create</button>
+      <button
+        type="button"
+        className={activeTab === 'learn' ? 'nav-tab active' : 'nav-tab'}
+        aria-current={activeTab === 'learn' ? 'page' : undefined}
+        onClick={() => onTabChange('learn')}
+      >Learn</button>
+      <button
+        type="button"
+        className={activeTab === 'library' ? 'nav-tab active' : 'nav-tab'}
+        aria-current={activeTab === 'library' ? 'page' : undefined}
+        onClick={() => onTabChange('library')}
+      >Library</button>
+    </nav>
   )
 }

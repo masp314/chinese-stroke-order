@@ -9,6 +9,7 @@ import { HistoryPanel } from './components/HistoryPanel'
 import { PronunciationPanel } from './components/PronunciationPanel'
 import { SavedWordSets } from './components/SavedWordSets'
 import { VocabularyPanel } from './components/VocabularyPanel'
+import { WorksheetPanel } from './components/WorksheetPanel'
 import { SectionMenu } from './components/SectionMenu'
 import { StrokeAnimator, type StrokeAnimatorHandle } from './components/StrokeAnimator'
 import { useAiSettings } from './hooks/useAiSettings'
@@ -118,9 +119,10 @@ function App() {
     if (runId === runIdRef.current) setIsPlayingAll(false)
   }
 
+  const [activeTab, setActiveTab] = useState<'create' | 'learn' | 'library'>('create')
+
   return (
     <main>
-      <SectionMenu />
       <header className="hero">
         <div className="brand-mark" aria-hidden="true">升</div>
         <div>
@@ -130,142 +132,158 @@ function App() {
         </div>
       </header>
 
-      <CharacterInput value={input} onChange={setInput} onSubmit={parseInput} onImport={loadText} />
-      {inputMessage && <p className="input-error" role="alert">{inputMessage}</p>}
+      <SectionMenu activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <FileImportPanel
-        aiProxyUrl={aiSettings.proxyUrl}
-        aiUnlimited={aiSettings.isUnlimited}
-        onOpenAiSettings={() => setAiSettingsOpen(true)}
-        onUseText={(text) => {
-          loadText(text)
-          window.requestAnimationFrame(() => document.querySelector('#input')?.scrollIntoView({ behavior: 'smooth' }))
-        }}
-      />
+      {activeTab === 'create' && (
+        <>
+          <CharacterInput value={input} onChange={setInput} onSubmit={() => { parseInput(); setActiveTab('learn') }} onImport={(text) => { loadText(text); setActiveTab('learn') }} />
+          {inputMessage && <p className="input-error" role="alert">{inputMessage}</p>}
 
-      <AiSettings
-        open={aiSettingsOpen}
-        isUnlimited={aiSettings.isUnlimited}
-        onClose={() => setAiSettingsOpen(false)}
-        onUnlock={aiSettings.unlock}
-        onLock={aiSettings.lock}
-      />
+          <FileImportPanel
+            aiProxyUrl={aiSettings.proxyUrl}
+            aiUnlimited={aiSettings.isUnlimited}
+            onOpenAiSettings={() => setAiSettingsOpen(true)}
+            onUseText={(text) => {
+              loadText(text)
+              setActiveTab('learn')
+            }}
+          />
 
-      <section id="practice" className="practice-card" aria-labelledby="practice-heading">
-        <div className="practice-heading">
-          <div>
-            <p className="eyebrow">STEP 2</p>
-            <h2 id="practice-heading">{mode === 'watch' ? 'Watch and follow along' : 'Trace it yourself'}</h2>
-          </div>
-          {characters.length > 0 && (
-            <span className="counter">Character {currentIndex + 1} of {characters.length}</span>
-          )}
-        </div>
+          <AiSettings
+            open={aiSettingsOpen}
+            isUnlimited={aiSettings.isUnlimited}
+            onClose={() => setAiSettingsOpen(false)}
+            onUnlock={aiSettings.unlock}
+            onLock={aiSettings.lock}
+          />
+        </>
+      )}
 
-        <div className="mode-switch" role="tablist" aria-label="Practice mode">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'watch'}
-            className={mode === 'watch' ? 'active' : ''}
-            onClick={() => { stopPlayback(); setMode('watch') }}
-          >▶ Watch mode</button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'quiz'}
-            className={mode === 'quiz' ? 'active' : ''}
-            onClick={() => { stopPlayback(); setMode('quiz') }}
-          >✎ Quiz mode</button>
-        </div>
+      {activeTab === 'learn' && (
+        <>
+          <section id="practice" className="practice-card" aria-labelledby="practice-heading">
+            <div className="practice-heading">
+              <div>
+                <p className="eyebrow">STROKE ORDER</p>
+                <h2 id="practice-heading">{mode === 'watch' ? 'Watch and follow along' : 'Trace it yourself'}</h2>
+              </div>
+              {characters.length > 0 && (
+                <span className="counter">Character {currentIndex + 1} of {characters.length}</span>
+              )}
+            </div>
 
-        {characters.length ? (
-          <>
-            <StrokeAnimator
-              ref={animatorRef}
-              character={characters[currentIndex]}
-              speed={speed}
-              mode={mode}
-              onStateChange={setPlaybackState}
-            />
-            <CharacterList characters={characters} currentIndex={currentIndex} onSelect={selectCharacter} />
-            {mode === 'watch' ? <Controls
-              currentIndex={currentIndex}
-              count={characters.length}
-              isPlaying={isPlaying}
-              isPlayingAll={isPlayingAll}
-              speed={speed}
-              onPrevious={() => selectCharacter(currentIndex - 1)}
-              onNext={() => selectCharacter(currentIndex + 1)}
-              onPlay={playCurrent}
-              onPlayAll={playAll}
-              onStop={stopPlayback}
-              onSpeedChange={(nextSpeed) => {
-                stopPlayback()
-                setSpeed(nextSpeed)
-              }}
-            /> : <QuizControls
-              currentIndex={currentIndex}
-              count={characters.length}
-              isLoading={playbackState === 'loading' || playbackState === 'unsupported'}
-              onPrevious={() => selectCharacter(currentIndex - 1)}
-              onNext={() => selectCharacter(currentIndex + 1)}
-              onStart={() => { void animatorRef.current?.startQuiz() }}
-              onReset={() => { void animatorRef.current?.resetQuiz() }}
-            />}
-          </>
-        ) : (
-          <div className="empty-state">
-            <span aria-hidden="true">✎</span>
-            <p>Your characters will appear here.</p>
-          </div>
-        )}
-      </section>
+            <div className="mode-switch" role="tablist" aria-label="Practice mode">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === 'watch'}
+                className={mode === 'watch' ? 'active' : ''}
+                onClick={() => { stopPlayback(); setMode('watch') }}
+              >▶ Watch mode</button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === 'quiz'}
+                className={mode === 'quiz' ? 'active' : ''}
+                onClick={() => { stopPlayback(); setMode('quiz') }}
+              >✎ Quiz mode</button>
+            </div>
 
-      <PronunciationPanel
-        text={chineseText}
-        pinyin={displayedPinyin}
-        autoPinyin={autoPinyin}
-        currentCharacter={currentCharacter}
-        currentCharacterPinyin={currentCharacterPinyin}
-        characters={characters}
-        currentIndex={currentIndex}
-        selectedIndices={speechSelection}
-        speechSpeed={speechSpeed}
-        speechMessage={speech.message}
-        voices={speech.voices}
-        selectedVoiceURI={speech.selectedVoiceURI}
-        aiProxyUrl={aiSettings.proxyUrl}
-        isWordSaved={vocabulary.isSaved}
-        onSaveWord={vocabulary.save}
-        onPinyinChange={setPinyinOverride}
-        onUseAutomatic={() => setPinyinOverride(undefined)}
-        onCurrentIndexChange={selectCharacter}
-        onToggleSelectedIndex={toggleSpeechSelection}
-        onSpeechSpeedChange={setSpeechSpeed}
-        onVoiceChange={speech.setSelectedVoiceURI}
-        onSpeakCharacter={() => speech.speak(currentCharacter ?? '', speechSpeed)}
-        onSpeakSelection={() => speech.speak(speechSelection.map((index) => characters[index]).join(''), speechSpeed)}
-        onSpeakText={() => speech.speak(chineseText, speechSpeed)}
-      />
+            {characters.length ? (
+              <>
+                <StrokeAnimator
+                  ref={animatorRef}
+                  character={characters[currentIndex]}
+                  speed={speed}
+                  mode={mode}
+                  onStateChange={setPlaybackState}
+                />
+                <CharacterList characters={characters} currentIndex={currentIndex} onSelect={selectCharacter} />
+                {mode === 'watch' ? <Controls
+                  currentIndex={currentIndex}
+                  count={characters.length}
+                  isPlaying={isPlaying}
+                  isPlayingAll={isPlayingAll}
+                  speed={speed}
+                  onPrevious={() => selectCharacter(currentIndex - 1)}
+                  onNext={() => selectCharacter(currentIndex + 1)}
+                  onPlay={playCurrent}
+                  onPlayAll={playAll}
+                  onStop={stopPlayback}
+                  onSpeedChange={(nextSpeed) => {
+                    stopPlayback()
+                    setSpeed(nextSpeed)
+                  }}
+                /> : <QuizControls
+                  currentIndex={currentIndex}
+                  count={characters.length}
+                  isLoading={playbackState === 'loading' || playbackState === 'unsupported'}
+                  onPrevious={() => selectCharacter(currentIndex - 1)}
+                  onNext={() => selectCharacter(currentIndex + 1)}
+                  onStart={() => { void animatorRef.current?.startQuiz() }}
+                  onReset={() => { void animatorRef.current?.resetQuiz() }}
+                />}
+              </>
+            ) : (
+              <div className="empty-state">
+                <span aria-hidden="true">✎</span>
+                <p>Enter text in <button type="button" className="link-button" onClick={() => setActiveTab('create')}>Create</button> to start practising.</p>
+              </div>
+            )}
+          </section>
 
-      <VocabularyPanel
-        entries={vocabulary.entries}
-        onDelete={vocabulary.remove}
-        onSpeak={(text) => speech.speak(text, speechSpeed)}
-      />
+          <PronunciationPanel
+            text={chineseText}
+            pinyin={displayedPinyin}
+            autoPinyin={autoPinyin}
+            currentCharacter={currentCharacter}
+            currentCharacterPinyin={currentCharacterPinyin}
+            characters={characters}
+            currentIndex={currentIndex}
+            selectedIndices={speechSelection}
+            speechSpeed={speechSpeed}
+            speechMessage={speech.message}
+            voices={speech.voices}
+            selectedVoiceURI={speech.selectedVoiceURI}
+            aiProxyUrl={aiSettings.proxyUrl}
+            isWordSaved={vocabulary.isSaved}
+            onSaveWord={vocabulary.save}
+            onPinyinChange={setPinyinOverride}
+            onUseAutomatic={() => setPinyinOverride(undefined)}
+            onCurrentIndexChange={selectCharacter}
+            onToggleSelectedIndex={toggleSpeechSelection}
+            onSpeechSpeedChange={setSpeechSpeed}
+            onVoiceChange={speech.setSelectedVoiceURI}
+            onSpeakCharacter={() => speech.speak(currentCharacter ?? '', speechSpeed)}
+            onSpeakSelection={() => speech.speak(speechSelection.map((index) => characters[index]).join(''), speechSpeed)}
+            onSpeakText={() => speech.speak(chineseText, speechSpeed)}
+          />
 
-      <SavedWordSets
-        currentText={input}
-        currentPinyin={pinyinOverride}
-        sets={savedWordSets.sets}
-        storageError={savedWordSets.storageError}
-        onSave={savedWordSets.save}
-        onLoad={loadSavedSet}
-        onDelete={savedWordSets.remove}
-      />
+          <WorksheetPanel currentInput={input} characters={characters} />
+        </>
+      )}
 
-      <HistoryPanel items={history.items} onLoad={loadText} onClear={history.clear} />
+      {activeTab === 'library' && (
+        <>
+          <VocabularyPanel
+            entries={vocabulary.entries}
+            onDelete={vocabulary.remove}
+            onSpeak={(text) => speech.speak(text, speechSpeed)}
+          />
+
+          <SavedWordSets
+            currentText={input}
+            currentPinyin={pinyinOverride}
+            sets={savedWordSets.sets}
+            storageError={savedWordSets.storageError}
+            onSave={savedWordSets.save}
+            onLoad={(set) => { loadSavedSet(set); setActiveTab('learn') }}
+            onDelete={savedWordSets.remove}
+          />
+
+          <HistoryPanel items={history.items} onLoad={(text) => { loadText(text); setActiveTab('learn') }} onClear={history.clear} />
+        </>
+      )}
 
       <footer>Made for curious little writers.</footer>
     </main>

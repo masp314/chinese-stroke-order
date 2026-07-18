@@ -19,7 +19,6 @@ body {
 }
 
 html { scroll-behavior: smooth; }
-section[id] { scroll-margin-top: 78px; }
 
 button, textarea, select, input { font: inherit; }
 ::placeholder { color: #b0b8c1; opacity: 1; }
@@ -27,11 +26,11 @@ button, select { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: 0.46; }
 
 main { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 38px 0 26px; }
-.section-menu { position: fixed; z-index: 30; top: 18px; right: max(18px, calc((100vw - 1080px) / 2)); }
-.menu-button { display: grid; place-items: center; width: 54px; min-height: 54px; padding: 0; border-color: rgba(126,142,157,.2); border-radius: 17px; color: #b65e50; background: rgba(255,255,255,.96); box-shadow: 0 8px 24px rgba(72,63,54,.14); font-size: 1.55rem; }
-.menu-popover { display: grid; width: 210px; margin-top: 8px; padding: 8px; border: 1px solid #e5e9e8; border-radius: 17px; background: rgba(255,255,255,.98); box-shadow: 0 14px 36px rgba(72,63,54,.16); }
-.menu-popover a { padding: 11px 13px; border-radius: 11px; color: #425461; text-decoration: none; font-weight: 750; }
-.menu-popover a:hover, .menu-popover a:focus-visible { color: #b95748; background: #fff0eb; outline: none; }
+.main-nav { display: flex; gap: 6px; margin-bottom: 28px; padding: 5px; border-radius: 16px; background: rgba(255,255,255,.7); border: 1px solid rgba(126,142,157,.14); box-shadow: 0 4px 16px rgba(93,78,62,.06); }
+.nav-tab { flex: 1; padding: 12px 8px; border: none; border-radius: 12px; background: transparent; color: #718096; font-weight: 700; font-size: .95rem; transition: background .15s, color .15s; }
+.nav-tab:hover { background: rgba(239,127,109,.08); color: #b95748; }
+.nav-tab.active { background: #ef7f6d; color: white; box-shadow: 0 4px 12px rgba(219,101,84,.22); }
+.link-button { display: inline; padding: 0; border: none; background: none; color: #ef7f6d; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
 
 .hero { display: flex; align-items: center; gap: 20px; margin: 0 0 28px; }
 .hero h1 { margin: 0; color: #293849; font-size: clamp(2rem, 5vw, 3.1rem); letter-spacing: -0.04em; }
@@ -229,8 +228,8 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
   .hero { margin-left: 8px; }
   .brand-mark { width: 62px; height: 62px; border-radius: 19px; font-size: 2.2rem; }
   .hero p:last-child { font-size: .92rem; }
-  .section-menu { top: 10px; right: 10px; }
-  .menu-button { width: 48px; min-height: 48px; }
+  .main-nav { gap: 4px; margin-bottom: 20px; }
+  .nav-tab { padding: 10px 6px; font-size: .88rem; }
   .input-card, .practice-card, .library-card, .history-card, .pronunciation-card, .vocabulary-card { padding: 20px 17px; border-radius: 22px; }
   .file-import-card { border-radius: 22px; }
   .file-import-toggle { min-height: 68px; padding: 13px 17px; border-radius: 22px; }
@@ -288,3 +287,27 @@ footer { padding-top: 22px; text-align: center; color: #a09b91; font-size: .83re
 .vocab-item-actions { display: flex; gap: 5px; flex: 0 0 auto; }
 .vocab-item-actions button { min-height: 36px; min-width: 36px; padding: 0; border-radius: 10px; font-size: .9rem; }
 .vocab-toggle { margin-top: 10px; }
+
+/* Worksheet panel */
+.worksheet-desc { color: #89939e; font-size: .9rem; margin: 0 0 16px; }
+.worksheet-loading { color: #89939e; font-style: italic; }
+.worksheet-items { display: grid; gap: 10px; margin-bottom: 16px; }
+.worksheet-item { border: 1px solid #e5eeeb; border-radius: 14px; padding: 12px 16px; background: #fffefa; }
+.worksheet-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.worksheet-item-text { font-size: 1.3rem; font-weight: 800; color: #334155; }
+.worksheet-item-remove { min-width: 30px; min-height: 30px; padding: 0; border-radius: 8px; font-size: .85rem; }
+.worksheet-item-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.worksheet-field { display: flex; flex-direction: column; gap: 2px; }
+.worksheet-field-label { font-size: .75rem; font-weight: 700; color: #518a80; text-transform: uppercase; letter-spacing: .04em; }
+.worksheet-field input { padding: 6px 10px; border: 1px solid #d0e8e2; border-radius: 8px; font-size: .9rem; background: #fff; }
+.worksheet-field input:focus { border-color: #518a80; outline: none; box-shadow: 0 0 0 2px rgba(81,138,128,.15); }
+.worksheet-warning { color: #c4882a; font-size: .82rem; margin: 0 0 12px; padding: 8px 12px; background: #fef8ee; border-radius: 8px; border: 1px solid #f0e0c0; }
+.worksheet-options { display: flex; align-items: center; gap: 20px; margin-bottom: 16px; flex-wrap: wrap; }
+.worksheet-option { display: flex; align-items: center; gap: 6px; font-size: .9rem; color: #445566; }
+.worksheet-option select { padding: 4px 8px; border: 1px solid #d0e8e2; border-radius: 8px; background: #fff; font-size: .85rem; }
+.worksheet-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.worksheet-result { display: flex; gap: 8px; flex-wrap: wrap; }
+.worksheet-result .btn { font-size: .85rem; padding: 8px 16px; }
+@media (max-width: 600px) {
+  .worksheet-item-fields { grid-template-columns: 1fr; }
+}

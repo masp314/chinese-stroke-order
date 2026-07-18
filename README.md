@@ -57,3 +57,15 @@ Open **Advanced → Import from Image / PDF** to select PNG, JPG, JPEG, WebP, or
 Image OCR offers **Auto detect**, **Word / short phrase** for roughly 1–10 characters on one line, and **Worksheet / full page** for document-style images.
 
 For PDFs, the app checks the first three pages for embedded text first. If no Chinese embedded text is found, those pages are rendered locally and sent through OCR. Extracted text remains editable until **Use this text & show characters** is selected. Long PDFs display a first-three-pages warning.
+
+## Printable Writing Worksheet
+
+The **Printable Worksheet** section generates a downloadable PDF for handwriting practice. Enter Chinese words or phrases, review the auto-generated pinyin and English meanings (from CC-CEDICT), then click **Generate PDF**.
+
+The PDF includes a cover page, practice pages with tracing boxes and writing grids (20 mm per character), and an optional mini test. Illustrations are asset-based only — the app never generates fake vector art. If no raster image is available for a word, the PDF is generated without illustrations.
+
+### Limitations
+
+- Chinese characters and pinyin are rendered as images (canvas), not vector text — PDF text search does not match CJK content.
+- English meanings come from the bundled CC-CEDICT dictionary; words not in the dictionary require manual entry.
+- PDF generation is client-side; very large word lists may produce large files.
